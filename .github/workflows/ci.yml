@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build macOS app
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Verify app bundle
+        run: |
+          codesign --verify --deep --strict --verbose=2 "TimestampInserter/Build/Timestamp Inserter.app"
+          plutil -lint "TimestampInserter/Build/Timestamp Inserter.app/Contents/Info.plist"
+
+      - name: Package artifact
+        run: ./scripts/package.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Timestamp-Inserter
+          path: dist/Timestamp-Inserter.zip
