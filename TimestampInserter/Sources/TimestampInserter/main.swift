@@ -1,6 +1,7 @@
 import AppKit
 import ApplicationServices
 import Carbon
+import ServiceManagement
 
 private let defaultTimestampFormat = "yyyy-MM-dd-HHmm"
 
@@ -414,7 +415,7 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         self.onSave = onSave
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 270),
+            contentRect: NSRect(x: 0, y: 0, width: 500, height: 360),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -457,6 +458,50 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
             root.topAnchor.constraint(equalTo: contentView.topAnchor),
             root.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
+
+        let headerStack = NSStackView()
+        headerStack.orientation = .horizontal
+        headerStack.alignment = .centerY
+        headerStack.spacing = 12
+
+        let appIconImage = NSImage(named: "AppIcon") ?? NSImage()
+        let appIconView = NSImageView(image: appIconImage)
+        appIconView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            appIconView.widthAnchor.constraint(equalToConstant: 64),
+            appIconView.heightAnchor.constraint(equalToConstant: 64)
+        ])
+
+        let titleStack = NSStackView()
+        titleStack.orientation = .vertical
+        titleStack.alignment = .leading
+        titleStack.spacing = 4
+
+        let appTitleLabel = NSTextField(labelWithString: "Timestamp Inserter")
+        appTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
+
+        let descriptionLabel = NSTextField(labelWithString: "Insert timestamps directly into any text field.")
+        descriptionLabel.font = .systemFont(ofSize: 12)
+        descriptionLabel.textColor = .secondaryLabelColor
+
+        titleStack.addArrangedSubview(appTitleLabel)
+        titleStack.addArrangedSubview(descriptionLabel)
+
+        headerStack.addArrangedSubview(appIconView)
+        headerStack.addArrangedSubview(titleStack)
+
+        root.addArrangedSubview(headerStack)
+
+        let divider = NSBox()
+        divider.boxType = .separator
+        divider.translatesAutoresizingMaskIntoConstraints = false
+        root.addArrangedSubview(divider)
+
+        if #available(macOS 13.0, *) {
+            let launchAtLoginButton = NSButton(checkboxWithTitle: "Launch at login", target: self, action: #selector(toggleLaunchAtLogin))
+            launchAtLoginButton.state = SMAppService.mainApp.status == .enabled ? .on : .off
+            root.addArrangedSubview(launchAtLoginButton)
+        }
 
         let formatLabel = NSTextField(labelWithString: "Timestamp format")
         formatLabel.font = .boldSystemFont(ofSize: 13)
@@ -519,12 +564,28 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         root.addArrangedSubview(buttonRow)
 
         NSLayoutConstraint.activate([
+            divider.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
             formatField.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
             hotKeyRecorder.widthAnchor.constraint(equalToConstant: 260),
             hotKeyRecorder.heightAnchor.constraint(equalToConstant: 34),
             buttonRow.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
             spacer.widthAnchor.constraint(greaterThanOrEqualToConstant: 1)
         ])
+    }
+
+    @available(macOS 13.0, *)
+    @objc private func toggleLaunchAtLogin(_ sender: NSButton) {
+        do {
+            if sender.state == .on {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            print("Failed to toggle launch at login: \(error)")
+            // Revert state on failure
+            sender.state = sender.state == .on ? .off : .on
+        }
     }
 
     private func loadSettings() {
@@ -603,7 +664,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func installMenuBarItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        item.button?.title = "TS"
+        item.button?.image = NSImage(systemSymbolName: "calendar.badge.clock", accessibilityDescription: "Timestamp Inserter")
         item.button?.toolTip = "Timestamp Inserter"
 
         let menu = NSMenu()
@@ -634,6 +695,11 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
             keyEquivalent: ""
         ))
         menu.addItem(.separator())
+        menu.addItem(NSMenuItem(
+            title: "About Timestamp Inserter",
+            action: #selector(openAbout),
+            keyEquivalent: ""
+        ))
         menu.addItem(NSMenuItem(
             title: "Quit",
             action: #selector(quit),
@@ -678,6 +744,10 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func openAccessibilitySettings() {
         AccessibilityPermission.openSettings()
+    }
+
+    @objc private func openAbout() {
+        NSApp.orderFrontStandardAboutPanel(nil)
     }
 
     @objc private func quit() {

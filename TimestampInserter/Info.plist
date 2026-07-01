@@ -6,6 +6,8 @@
 	<string>TimestampInserter</string>
 	<key>CFBundleIdentifier</key>
 	<string>local.timestamp-inserter</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
 	<key>CFBundleName</key>
 	<string>Timestamp Inserter</string>
 	<key>CFBundleDisplayName</key>
