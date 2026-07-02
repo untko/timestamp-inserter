@@ -22,11 +22,21 @@ Default format:
 yyyy-MM-dd-HHmm
 ```
 
+## Download & Install
+
+You can download the latest pre-built version from the [Releases](../../releases/latest) page.
+
+1. Download the `Timestamp-Inserter.zip` file and extract it.
+2. Drag `Timestamp Inserter.app` into your `/Applications` folder.
+3. **Important:** Because this app is not signed with a paid Apple Developer certificate, macOS will block it the first time you try to open it.
+   - To bypass this, **right-click** (or Control-click) `Timestamp Inserter.app` in Finder and select **Open**.
+   - macOS will show a warning, but you can click **Open** anyway. You only need to do this once.
+
 ## Requirements
 
 - macOS 12 or newer.
-- Xcode Command Line Tools for building from source.
 - Accessibility permission for inserting text into other apps.
+- Xcode Command Line Tools (only if building from source).
 
 ## Install From Source
 
