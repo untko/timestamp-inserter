@@ -5,6 +5,143 @@ import ServiceManagement
 
 private let defaultTimestampFormat = "yyyy-MM-dd-HHmm"
 
+private enum FormatType: String, Equatable {
+    case seconds
+    case milliseconds
+    case iso8601
+    case europeanShort
+    case european
+    case germanLong
+    case us
+    case usShort
+    case british
+    case rfc2822
+    case unixReadable
+    case custom
+}
+
+private struct FormatDefinition {
+    let type: FormatType
+    let label: String
+    let badgeText: String
+    let badgeColor: NSColor
+
+    static let unix: [FormatDefinition] = [
+        FormatDefinition(type: .seconds, label: "Seconds", badgeText: "TS", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0)),
+        FormatDefinition(type: .milliseconds, label: "Milliseconds", badgeText: "TS", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0))
+    ]
+
+    static let date: [FormatDefinition] = [
+        FormatDefinition(type: .iso8601, label: "ISO 8601 UTC", badgeText: "ISO", badgeColor: NSColor(red: 0.85, green: 0.2, blue: 0.85, alpha: 1.0)),
+        FormatDefinition(type: .europeanShort, label: "European (short)", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
+        FormatDefinition(type: .european, label: "European", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
+        FormatDefinition(type: .germanLong, label: "German (long)", badgeText: "DE", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
+        FormatDefinition(type: .us, label: "US", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0)),
+        FormatDefinition(type: .usShort, label: "US (short)", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0)),
+        FormatDefinition(type: .british, label: "British", badgeText: "UK", badgeColor: NSColor(red: 1.0, green: 0.6, blue: 0.0, alpha: 1.0)),
+        FormatDefinition(type: .rfc2822, label: "RFC 2822", badgeText: "RFC", badgeColor: NSColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)),
+        FormatDefinition(type: .unixReadable, label: "Unix readable", badgeText: "UNIX", badgeColor: NSColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0))
+    ]
+
+    static let all = unix + date
+}
+
+private func createBadgeImage(text: String, color: NSColor) -> NSImage {
+    let size = NSSize(width: 32, height: 16)
+    let image = NSImage(size: size)
+    image.lockFocus()
+
+    let path = NSBezierPath(roundedRect: NSRect(origin: .zero, size: size), xRadius: 4, yRadius: 4)
+    color.setFill()
+    path.fill()
+
+    let paragraph = NSMutableParagraphStyle()
+    paragraph.alignment = .center
+    let attributes: [NSAttributedString.Key: Any] = [
+        .font: NSFont.systemFont(ofSize: 10, weight: .bold),
+        .foregroundColor: NSColor.white,
+        .paragraphStyle: paragraph
+    ]
+    let attrString = NSAttributedString(string: text, attributes: attributes)
+    let rect = NSRect(x: 0, y: (size.height - attrString.size().height) / 2 - 0.5, width: size.width, height: attrString.size().height)
+    attrString.draw(in: rect)
+
+    image.unlockFocus()
+    image.isTemplate = false
+    return image
+}
+
+private final class InteractiveMenuItemView: NSView {
+    private var isHighlighted = false
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        if isHighlighted {
+            NSColor.selectedMenuItemColor.setFill()
+            bounds.fill()
+        }
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        trackingAreas.forEach { removeTrackingArea($0) }
+        let area = NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInActiveApp], owner: self, userInfo: nil)
+        addTrackingArea(area)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        isHighlighted = true
+        needsDisplay = true
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        isHighlighted = false
+        needsDisplay = true
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        isHighlighted = false
+        needsDisplay = true
+
+        guard let item = enclosingMenuItem, let menu = item.menu else { return }
+        menu.cancelTracking()
+
+        if let target = item.target as? NSObject, let action = item.action {
+            target.perform(action, with: item)
+        }
+    }
+}
+
+private func createSectionHeader(title: String) -> NSMenuItem {
+    let view = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 22))
+
+    let line1 = NSBox(frame: NSRect(x: 10, y: 11, width: 40, height: 1))
+    line1.boxType = .custom
+    line1.fillColor = NSColor.separatorColor
+    line1.borderWidth = 0
+
+    let label = NSTextField(labelWithString: title)
+    label.font = .systemFont(ofSize: 10, weight: .bold)
+    label.textColor = NSColor.secondaryLabelColor
+    label.sizeToFit()
+    label.frame.origin = NSPoint(x: line1.frame.maxX + 8, y: (view.frame.height - label.frame.height) / 2)
+
+    let line2 = NSBox(frame: NSRect(x: label.frame.maxX + 8, y: 11, width: 200, height: 1))
+    line2.autoresizingMask = .width
+    line2.boxType = .custom
+    line2.fillColor = NSColor.separatorColor
+    line2.borderWidth = 0
+
+    view.addSubview(line1)
+    view.addSubview(label)
+    view.addSubview(line2)
+
+    let item = NSMenuItem()
+    item.view = view
+    item.isEnabled = false
+    return item
+}
+
 private func fourCharacterCode(_ string: String) -> OSType {
     var result: OSType = 0
     for character in string.utf8.prefix(4) {
@@ -138,11 +275,28 @@ private struct HotKey: Equatable {
 }
 
 private enum SettingsStore {
+    private static let formatTypeKey = "timestampFormatType"
     private static let formatKey = "timestampFormat"
     private static let hotKeyCodeKey = "hotKeyCode"
     private static let hotKeyModifiersKey = "hotKeyModifiers"
 
-    static var timestampFormat: String {
+    static var activeFormatType: FormatType {
+        get {
+            if let saved = UserDefaults.standard.string(forKey: formatTypeKey), let type = FormatType(rawValue: saved) {
+                return type
+            }
+            // Migrate: If there's an existing format string that isn't the default, they probably want Custom.
+            if let existingFormat = UserDefaults.standard.string(forKey: formatKey), existingFormat != defaultTimestampFormat {
+                return .custom
+            }
+            return .european
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: formatTypeKey)
+        }
+    }
+
+    static var customFormat: String {
         get {
             let saved = UserDefaults.standard.string(forKey: formatKey) ?? defaultTimestampFormat
             let trimmed = saved.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -177,17 +331,65 @@ private enum SettingsStore {
     }
 
     static func reset() {
-        timestampFormat = defaultTimestampFormat
+        customFormat = defaultTimestampFormat
+        activeFormatType = .european
         hotKey = .defaultValue
     }
 }
 
 private final class TimestampFormatter {
-    func string(from date: Date = Date()) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = SettingsStore.timestampFormat
-        return formatter.string(from: date)
+    func string(from date: Date = Date(), type: FormatType = SettingsStore.activeFormatType) -> String {
+        switch type {
+        case .seconds:
+            return String(Int(date.timeIntervalSince1970))
+        case .milliseconds:
+            return String(Int(date.timeIntervalSince1970 * 1000))
+        case .iso8601:
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime]
+            return formatter.string(from: date)
+        case .europeanShort:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd.MM.yyyy"
+            return formatter.string(from: date)
+        case .european:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
+            return formatter.string(from: date)
+        case .germanLong:
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "de_DE")
+            formatter.dateFormat = "d. MMMM yyyy, HH:mm 'Uhr'"
+            return formatter.string(from: date)
+        case .us:
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US")
+            formatter.dateFormat = "MM/dd/yyyy hh:mm:ss a"
+            return formatter.string(from: date)
+        case .usShort:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "M/dd/yyyy"
+            return formatter.string(from: date)
+        case .british:
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd/MM/yyyy HH:mm:ss"
+            return formatter.string(from: date)
+        case .rfc2822:
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
+            return formatter.string(from: date)
+        case .unixReadable:
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "EEE MMM dd HH:mm:ss zzz yyyy"
+            return formatter.string(from: date)
+        case .custom:
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = SettingsStore.customFormat
+            return formatter.string(from: date)
+        }
     }
 }
 
@@ -503,7 +705,7 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
             root.addArrangedSubview(launchAtLoginButton)
         }
 
-        let formatLabel = NSTextField(labelWithString: "Timestamp format")
+        let formatLabel = NSTextField(labelWithString: "Custom Timestamp format")
         formatLabel.font = .boldSystemFont(ofSize: 13)
 
         formatField.delegate = self
@@ -513,7 +715,7 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         formatField.target = self
         formatField.action = #selector(formatFieldChanged)
 
-        let helpLabel = NSTextField(labelWithString: "Examples: yyyy-MM-dd-HHmm, yyyy-MM-dd-HHmmX gives +07, yyyy-MM-dd-HHmmXXX gives +07:00.")
+        let helpLabel = NSTextField(labelWithString: "Examples: yyyy-MM-dd-HHmm, yyyy-MM-dd-HHmmX gives +07. Editing this will switch you to the Custom format.")
         helpLabel.font = .systemFont(ofSize: 11)
         helpLabel.textColor = .secondaryLabelColor
         helpLabel.lineBreakMode = .byWordWrapping
@@ -589,17 +791,21 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
     }
 
     private func loadSettings() {
-        formatField.stringValue = SettingsStore.timestampFormat
+        formatField.stringValue = SettingsStore.customFormat
         hotKeyRecorder.hotKey = SettingsStore.hotKey
         updateSample()
     }
 
     private func updateSample() {
+        let formatter = TimestampFormatter()
+        // If the user modified the field, preview the custom format string directly.
+        // Otherwise, just preview whatever custom format it currently evaluates to.
         let format = cleanedFormat()
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = format
-        sampleLabel.stringValue = "Preview: \(formatter.string(from: Date()))"
+        let tempDateFormatter = DateFormatter()
+        tempDateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        tempDateFormatter.dateFormat = format
+
+        sampleLabel.stringValue = "Custom Preview: \(tempDateFormatter.string(from: Date()))"
     }
 
     private func cleanedFormat() -> String {
@@ -617,6 +823,7 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
 
     @objc private func resetSettings() {
         formatField.stringValue = defaultTimestampFormat
+        SettingsStore.activeFormatType = .european
         hotKeyRecorder.hotKey = .defaultValue
         updateSample()
     }
@@ -626,7 +833,16 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
     }
 
     @objc private func saveSettings() {
-        SettingsStore.timestampFormat = cleanedFormat()
+        let oldCustom = SettingsStore.customFormat
+        let newCustom = cleanedFormat()
+
+        SettingsStore.customFormat = newCustom
+
+        // If the user typed a new custom format in settings, switch to custom format mode automatically.
+        if oldCustom != newCustom || SettingsStore.activeFormatType == .custom {
+            SettingsStore.activeFormatType = .custom
+        }
+
         SettingsStore.hotKey = hotKeyRecorder.hotKey
         onSave()
         close()
@@ -647,13 +863,11 @@ private extension NSAlert {
     }
 }
 
-private final class AppDelegate: NSObject, NSApplicationDelegate {
+private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let inserter = TimestampInserter()
     private var hotKeyController: HotKeyController?
     private var preferencesWindowController: PreferencesWindowController?
     private var statusItem: NSStatusItem?
-    private var hotKeyMenuItem: NSMenuItem?
-    private var formatMenuItem: NSMenuItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -668,21 +882,74 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         item.button?.toolTip = "Timestamp Inserter"
 
         let menu = NSMenu()
-        menu.addItem(NSMenuItem(
-            title: "Insert Timestamp",
-            action: #selector(insertTimestamp),
-            keyEquivalent: ""
-        ))
+        menu.delegate = self
+        item.menu = menu
+        statusItem = item
+    }
 
-        let hotKeyItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-        let formatItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
-        menu.addItem(hotKeyItem)
-        menu.addItem(formatItem)
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        menu.removeAllItems()
+
+        // Add Unix Timestamps section
+        menu.addItem(createSectionHeader(title: "UNIX TIMESTAMP"))
+        for def in FormatDefinition.unix {
+            menu.addItem(createFormatMenuItem(for: def))
+        }
+
+        // Add Date Formats section
+        menu.addItem(createSectionHeader(title: "DATE FORMAT"))
+        for def in FormatDefinition.date {
+            menu.addItem(createFormatMenuItem(for: def))
+        }
+
+        // Add Custom section
+        menu.addItem(createSectionHeader(title: "CUSTOM"))
+        let customItem = NSMenuItem(title: "Custom Format...", action: #selector(openSettings), keyEquivalent: "")
+        customItem.target = self
+        if SettingsStore.activeFormatType == .custom {
+            customItem.state = .on
+        }
+
+        let customPreview = TimestampFormatter().string(type: .custom)
+        let customAttr = NSAttributedString(string: customPreview, attributes: [.font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular), .foregroundColor: NSColor.secondaryLabelColor])
+
+        // Setup a custom view to show the text + right aligned preview
+        let container = InteractiveMenuItemView(frame: NSRect(x: 0, y: 0, width: 340, height: 22))
+        let titleLabel = NSTextField(labelWithString: "   Custom Format")
+        titleLabel.font = .systemFont(ofSize: 14)
+        titleLabel.sizeToFit()
+        titleLabel.frame.origin = NSPoint(x: 20, y: (container.frame.height - titleLabel.frame.height) / 2)
+
+        let previewLabel = NSTextField(labelWithAttributedString: customAttr)
+        previewLabel.sizeToFit()
+        previewLabel.frame.origin = NSPoint(x: container.frame.width - previewLabel.frame.width - 20, y: (container.frame.height - previewLabel.frame.height) / 2)
+
+        container.addSubview(titleLabel)
+        container.addSubview(previewLabel)
+
+        let customHostItem = NSMenuItem()
+        customHostItem.view = container
+        customHostItem.action = #selector(selectCustomFormat)
+        customHostItem.target = self
+
+        menu.addItem(customHostItem)
+
+        // If it's custom, add the checkmark logic.
+        // We can't use standard state = .on with a custom view easily without drawing it ourselves,
+        // so we just prepend a checkmark if it's active.
+        if SettingsStore.activeFormatType == .custom {
+            titleLabel.stringValue = "✓ Custom Format"
+        } else {
+            titleLabel.stringValue = "   Custom Format"
+        }
+
+        menu.addItem(.separator())
         menu.addItem(NSMenuItem(
-            title: "Inserts directly without using clipboard",
+            title: "Hotkey: \(SettingsStore.hotKey.displayString)",
             action: nil,
             keyEquivalent: ""
         ))
+
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
             title: "Settings...",
@@ -705,12 +972,54 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
             action: #selector(quit),
             keyEquivalent: "q"
         ))
+    }
 
-        item.menu = menu
-        statusItem = item
-        hotKeyMenuItem = hotKeyItem
-        formatMenuItem = formatItem
-        updateMenuLabels()
+    private func createFormatMenuItem(for def: FormatDefinition) -> NSMenuItem {
+        let container = InteractiveMenuItemView(frame: NSRect(x: 0, y: 0, width: 340, height: 22))
+
+        let badgeView = NSImageView(image: createBadgeImage(text: def.badgeText, color: def.badgeColor))
+        badgeView.frame = NSRect(x: 20, y: (container.frame.height - 16) / 2, width: 32, height: 16)
+
+        let titleLabel = NSTextField(labelWithString: def.label)
+        titleLabel.font = .systemFont(ofSize: 14)
+        titleLabel.sizeToFit()
+        titleLabel.frame.origin = NSPoint(x: badgeView.frame.maxX + 8, y: (container.frame.height - titleLabel.frame.height) / 2)
+
+        let sampleText = TimestampFormatter().string(type: def.type)
+        let sampleAttr = NSAttributedString(string: sampleText, attributes: [.font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular), .foregroundColor: NSColor.secondaryLabelColor])
+        let sampleLabel = NSTextField(labelWithAttributedString: sampleAttr)
+        sampleLabel.sizeToFit()
+
+        sampleLabel.frame.origin = NSPoint(x: container.frame.width - sampleLabel.frame.width - 20, y: (container.frame.height - sampleLabel.frame.height) / 2)
+
+        container.addSubview(badgeView)
+        container.addSubview(titleLabel)
+        container.addSubview(sampleLabel)
+
+        if SettingsStore.activeFormatType == def.type {
+            let checkmark = NSTextField(labelWithString: "✓")
+            checkmark.font = .systemFont(ofSize: 14)
+            checkmark.sizeToFit()
+            checkmark.frame.origin = NSPoint(x: 6, y: (container.frame.height - checkmark.frame.height) / 2)
+            container.addSubview(checkmark)
+        }
+
+        let item = NSMenuItem()
+        item.view = container
+        item.representedObject = def.type.rawValue
+        item.action = #selector(selectFormat(_:))
+        item.target = self
+        return item
+    }
+
+    @objc private func selectFormat(_ sender: NSMenuItem) {
+        if let rawValue = sender.representedObject as? String, let type = FormatType(rawValue: rawValue) {
+            SettingsStore.activeFormatType = type
+        }
+    }
+
+    @objc private func selectCustomFormat(_ sender: NSMenuItem) {
+        SettingsStore.activeFormatType = .custom
     }
 
     private func installHotKey() {
@@ -719,12 +1028,6 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         controller.register(SettingsStore.hotKey)
         hotKeyController = controller
-        updateMenuLabels()
-    }
-
-    private func updateMenuLabels() {
-        hotKeyMenuItem?.title = "Hotkey: \(SettingsStore.hotKey.displayString)"
-        formatMenuItem?.title = "Format: \(SettingsStore.timestampFormat)"
     }
 
     @objc private func insertTimestamp() {
