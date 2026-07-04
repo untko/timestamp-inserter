@@ -12,6 +12,6 @@ ZIP_PATH="$DIST_DIR/Timestamp-Inserter.zip"
 mkdir -p "$DIST_DIR"
 rm -f "$ZIP_PATH"
 
-ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+ditto -c -k --keepParent --norsrc --noextattr "$APP_PATH" "$ZIP_PATH"
 
 echo "$ZIP_PATH"

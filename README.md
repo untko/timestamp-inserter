@@ -26,7 +26,7 @@ yyyy-MM-dd-HHmm
 
 You can download the latest pre-built version from the [Releases](../../releases/latest) page.
 
-1. Download the `Timestamp-Inserter.zip` file and extract it.
+1. Download the `Timestamp-Inserter.zip` app asset and extract it. Do not use GitHub's automatic `Source code` zip files.
 2. Drag `Timestamp Inserter.app` into your `/Applications` folder.
 3. **Important:** Because this app is not signed with a paid Apple Developer certificate, macOS will block it the first time you try to open it.
    - To bypass this, **right-click** (or Control-click) `Timestamp Inserter.app` in Finder and select **Open**.

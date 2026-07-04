@@ -40,15 +40,51 @@ jobs:
           name: Timestamp-Inserter
           path: dist/Timestamp-Inserter.zip
 
-      - name: Upload to Release
+      - name: Publish latest app release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: app
+          RELEASE_TITLE: Latest app build
+          RELEASE_ASSET: dist/Timestamp-Inserter.zip
+        run: |
+          notes_file="$RUNNER_TEMP/latest-app-release-notes.md"
+          {
+            echo "Automated app build from main."
+            echo
+            echo "Commit: $GITHUB_SHA"
+            echo "Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > "$notes_file"
+
+          git tag --force "$RELEASE_TAG" "$GITHUB_SHA"
+          git push --force origin "refs/tags/$RELEASE_TAG"
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" \
+              --title "$RELEASE_TITLE" \
+              --notes-file "$notes_file" \
+              --latest
+            gh release upload "$RELEASE_TAG" "$RELEASE_ASSET#Timestamp Inserter.app.zip" --clobber
+          else
+            gh release create "$RELEASE_TAG" "$RELEASE_ASSET#Timestamp Inserter.app.zip" \
+              --verify-tag \
+              --title "$RELEASE_TITLE" \
+              --notes-file "$notes_file" \
+              --latest
+          fi
+
+      - name: Publish tagged release
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Try to create the release first (fails if it already exists)
-          gh release create "${{ github.ref_name }}" \
-            --title "Release ${{ github.ref_name }}" \
-            --generate-notes || true
+          tag="${{ github.ref_name }}"
 
-          # Upload the compiled zip to the release
-          gh release upload "${{ github.ref_name }}" dist/Timestamp-Inserter.zip --clobber
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" \
+              --verify-tag \
+              --title "Release $tag" \
+              --generate-notes
+          fi
+
+          gh release upload "$tag" "dist/Timestamp-Inserter.zip#Timestamp Inserter.app.zip" --clobber
