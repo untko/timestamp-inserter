@@ -1,6 +1,34 @@
 # Date Formats
 
-Timestamp Inserter uses Apple's `DateFormatter` patterns.
+Timestamp Inserter presets are split into three groups:
+
+- `UNIX TIMESTAMP`: numeric epoch values.
+- `INTERCHANGE`: standardized timestamps for logs, APIs, email, and agents.
+- `READABLE`: convenient local display formats.
+
+The default preset is `Compact local`, which uses `yyyy-MM-dd-HHmm`.
+
+```text
+2026-05-15-2030
+```
+
+This is compact, local, and naturally sortable. It is not an RFC 3339 or ISO 8601 interchange timestamp.
+
+## Presets
+
+| Preset | Pattern or source | Example |
+| --- | --- | --- |
+| Compact local | `yyyy-MM-dd-HHmm` | `2026-05-15-2030` |
+| RFC 3339 local | `yyyy-MM-dd'T'HH:mm:ssXXX` | `2026-05-15T20:30:45+07:00` |
+| RFC 3339 local ms | `yyyy-MM-dd'T'HH:mm:ss.SSSXXX` | `2026-05-15T20:30:45.123+07:00` |
+| RFC 3339 UTC | Apple `ISO8601DateFormatter` internet date-time | `2026-05-15T13:30:45Z` |
+| Email date | `EEE, dd MMM yyyy HH:mm:ss Z` | `Fri, 15 May 2026 20:30:45 +0700` |
+
+`2026-06-18T12:04:52+07:00` is best described as an RFC 3339 timestamp with a local UTC offset. RFC 3339 is a constrained Internet profile of ISO 8601.
+
+## Custom Patterns
+
+Custom formats use Apple's `DateFormatter` patterns.
 
 Common tokens:
 
@@ -12,6 +40,8 @@ Common tokens:
 | `HH` | 24-hour hour | `20` |
 | `mm` | Minute | `30` |
 | `ss` | Second | `45` |
+| `SSS` | Milliseconds | `123` |
+| `'T'` | Literal `T` separator | `T` |
 | `X` | ISO time zone, short | `+07` |
 | `XX` | ISO time zone, compact | `+0700` |
 | `XXX` | ISO time zone, colon | `+07:00` |
@@ -19,9 +49,14 @@ Common tokens:
 Examples:
 
 ```text
-yyyy-MM-dd-HHmm      -> 2026-05-15-2030
-yyyy-MM-dd-HHmmX     -> 2026-05-15-2030+07
-yyyy-MM-dd-HHmmXX    -> 2026-05-15-2030+0700
-yyyy-MM-dd-HHmmXXX   -> 2026-05-15-2030+07:00
-yyyy-MM-dd HH:mm:ss  -> 2026-05-15 20:30:45
+yyyy-MM-dd-HHmm              -> 2026-05-15-2030
+yyyy-MM-dd'T'HH:mm:ssXXX     -> 2026-05-15T20:30:45+07:00
+yyyy-MM-dd'T'HH:mm:ss.SSSXXX -> 2026-05-15T20:30:45.123+07:00
+yyyy-MM-dd HH:mm:ss          -> 2026-05-15 20:30:45
 ```
+
+References:
+
+- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339)
+- [W3C Date and Time Formats](https://www.w3.org/TR/NOTE-datetime)
+- [Unicode LDML date symbols](https://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table)

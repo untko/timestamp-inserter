@@ -16,11 +16,19 @@ Default output:
 2026-05-15-2030
 ```
 
-Default format:
+Default preset:
+
+```text
+Compact local
+```
+
+Default custom-format pattern:
 
 ```text
 yyyy-MM-dd-HHmm
 ```
+
+This default is compact and sorts naturally in filenames and notes. It is not an RFC 3339 or ISO 8601 interchange timestamp.
 
 ## Download & Install
 
@@ -88,11 +96,11 @@ You can change:
 Format examples:
 
 ```text
-yyyy-MM-dd-HHmm      -> 2026-05-15-2030
-yyyy-MM-dd-HHmmX     -> 2026-05-15-2030+07
-yyyy-MM-dd-HHmmXX    -> 2026-05-15-2030+0700
-yyyy-MM-dd-HHmmXXX   -> 2026-05-15-2030+07:00
-yyyy-MM-dd HH:mm:ss  -> 2026-05-15 20:30:45
+Compact local       yyyy-MM-dd-HHmm              -> 2026-05-15-2030
+RFC 3339 local      yyyy-MM-dd'T'HH:mm:ssXXX     -> 2026-05-15T20:30:45+07:00
+RFC 3339 local ms   yyyy-MM-dd'T'HH:mm:ss.SSSXXX -> 2026-05-15T20:30:45.123+07:00
+RFC 3339 UTC                                      -> 2026-05-15T13:30:45Z
+Email date          EEE, dd MMM yyyy HH:mm:ss Z  -> Fri, 15 May 2026 20:30:45 +0700
 ```
 
 The format is interpreted by Apple `DateFormatter`.

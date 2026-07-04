@@ -8,6 +8,9 @@ private let defaultTimestampFormat = "yyyy-MM-dd-HHmm"
 private enum FormatType: String, Equatable {
     case seconds
     case milliseconds
+    case compactLocal
+    case rfc3339Local
+    case rfc3339LocalMilliseconds
     case iso8601
     case europeanShort
     case european
@@ -31,19 +34,24 @@ private struct FormatDefinition {
         FormatDefinition(type: .milliseconds, label: "Milliseconds", badgeText: "TS", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0))
     ]
 
-    static let date: [FormatDefinition] = [
-        FormatDefinition(type: .iso8601, label: "ISO 8601 UTC", badgeText: "ISO", badgeColor: NSColor(red: 0.85, green: 0.2, blue: 0.85, alpha: 1.0)),
-        FormatDefinition(type: .europeanShort, label: "European (short)", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
+    static let interchange: [FormatDefinition] = [
+        FormatDefinition(type: .rfc3339Local, label: "RFC 3339 local", badgeText: "RFC", badgeColor: NSColor(red: 0.85, green: 0.2, blue: 0.85, alpha: 1.0)),
+        FormatDefinition(type: .iso8601, label: "RFC 3339 UTC", badgeText: "UTC", badgeColor: NSColor(red: 0.5, green: 0.38, blue: 0.9, alpha: 1.0)),
+        FormatDefinition(type: .rfc3339LocalMilliseconds, label: "RFC 3339 local ms", badgeText: "MS", badgeColor: NSColor(red: 0.7, green: 0.35, blue: 0.8, alpha: 1.0)),
+        FormatDefinition(type: .rfc2822, label: "Email date", badgeText: "MAIL", badgeColor: NSColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1.0))
+    ]
+
+    static let readable: [FormatDefinition] = [
+        FormatDefinition(type: .compactLocal, label: "Compact local", badgeText: "LOC", badgeColor: NSColor(red: 0.18, green: 0.65, blue: 0.36, alpha: 1.0)),
         FormatDefinition(type: .european, label: "European", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
         FormatDefinition(type: .germanLong, label: "German (long)", badgeText: "DE", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
         FormatDefinition(type: .us, label: "US", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0)),
         FormatDefinition(type: .usShort, label: "US (short)", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0)),
         FormatDefinition(type: .british, label: "British", badgeText: "UK", badgeColor: NSColor(red: 1.0, green: 0.6, blue: 0.0, alpha: 1.0)),
-        FormatDefinition(type: .rfc2822, label: "RFC 2822", badgeText: "RFC", badgeColor: NSColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)),
         FormatDefinition(type: .unixReadable, label: "Unix readable", badgeText: "UNIX", badgeColor: NSColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0))
     ]
 
-    static let all = unix + date
+    static let all = unix + interchange + readable
 }
 
 private func createBadgeImage(text: String, color: NSColor) -> NSImage {
@@ -112,8 +120,20 @@ private final class InteractiveMenuItemView: NSView {
     }
 }
 
+private enum MenuRowLayout {
+    static let width: CGFloat = 440
+    static let height: CGFloat = 22
+    static let badgeX: CGFloat = 20
+    static let badgeWidth: CGFloat = 32
+    static let titleX: CGFloat = 60
+    static let titleWidth: CGFloat = 145
+    static let sampleX: CGFloat = 214
+    static let rightPadding: CGFloat = 20
+    static let sampleWidth: CGFloat = width - sampleX - rightPadding
+}
+
 private func createSectionHeader(title: String) -> NSMenuItem {
-    let view = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 22))
+    let view = NSView(frame: NSRect(x: 0, y: 0, width: MenuRowLayout.width, height: 22))
 
     let line1 = NSBox(frame: NSRect(x: 10, y: 11, width: 40, height: 1))
     line1.boxType = .custom
@@ -126,7 +146,8 @@ private func createSectionHeader(title: String) -> NSMenuItem {
     label.sizeToFit()
     label.frame.origin = NSPoint(x: line1.frame.maxX + 8, y: (view.frame.height - label.frame.height) / 2)
 
-    let line2 = NSBox(frame: NSRect(x: label.frame.maxX + 8, y: 11, width: 200, height: 1))
+    let line2Width = max(20, view.frame.width - label.frame.maxX - 10)
+    let line2 = NSBox(frame: NSRect(x: label.frame.maxX + 8, y: 11, width: line2Width, height: 1))
     line2.autoresizingMask = .width
     line2.boxType = .custom
     line2.fillColor = NSColor.separatorColor
@@ -289,7 +310,7 @@ private enum SettingsStore {
             if let existingFormat = UserDefaults.standard.string(forKey: formatKey), existingFormat != defaultTimestampFormat {
                 return .custom
             }
-            return .european
+            return .compactLocal
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: formatTypeKey)
@@ -332,18 +353,31 @@ private enum SettingsStore {
 
     static func reset() {
         customFormat = defaultTimestampFormat
-        activeFormatType = .european
+        activeFormatType = .compactLocal
         hotKey = .defaultValue
     }
 }
 
 private final class TimestampFormatter {
+    private func posixFormatter(format: String) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = format
+        return formatter
+    }
+
     func string(from date: Date = Date(), type: FormatType = SettingsStore.activeFormatType) -> String {
         switch type {
         case .seconds:
             return String(Int(date.timeIntervalSince1970))
         case .milliseconds:
             return String(Int(date.timeIntervalSince1970 * 1000))
+        case .compactLocal:
+            return posixFormatter(format: defaultTimestampFormat).string(from: date)
+        case .rfc3339Local:
+            return posixFormatter(format: "yyyy-MM-dd'T'HH:mm:ssXXX").string(from: date)
+        case .rfc3339LocalMilliseconds:
+            return posixFormatter(format: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX").string(from: date)
         case .iso8601:
             let formatter = ISO8601DateFormatter()
             formatter.formatOptions = [.withInternetDateTime]
@@ -368,7 +402,7 @@ private final class TimestampFormatter {
             return formatter.string(from: date)
         case .usShort:
             let formatter = DateFormatter()
-            formatter.dateFormat = "M/dd/yyyy"
+            formatter.dateFormat = "M/d/yyyy"
             return formatter.string(from: date)
         case .british:
             let formatter = DateFormatter()
@@ -715,7 +749,7 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         formatField.target = self
         formatField.action = #selector(formatFieldChanged)
 
-        let helpLabel = NSTextField(labelWithString: "Examples: yyyy-MM-dd-HHmm, yyyy-MM-dd-HHmmX gives +07. Editing this will switch you to the Custom format.")
+        let helpLabel = NSTextField(labelWithString: "Examples: yyyy-MM-dd-HHmm or yyyy-MM-dd'T'HH:mm:ssXXX for RFC 3339 local. Editing this will switch you to Custom.")
         helpLabel.font = .systemFont(ofSize: 11)
         helpLabel.textColor = .secondaryLabelColor
         helpLabel.lineBreakMode = .byWordWrapping
@@ -822,7 +856,7 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
 
     @objc private func resetSettings() {
         formatField.stringValue = defaultTimestampFormat
-        SettingsStore.activeFormatType = .european
+        SettingsStore.activeFormatType = .compactLocal
         hotKeyRecorder.hotKey = .defaultValue
         updateSample()
     }
@@ -895,52 +929,21 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
             menu.addItem(createFormatMenuItem(for: def))
         }
 
-        // Add Date Formats section
-        menu.addItem(createSectionHeader(title: "DATE FORMAT"))
-        for def in FormatDefinition.date {
+        // Add Interchange section
+        menu.addItem(createSectionHeader(title: "INTERCHANGE"))
+        for def in FormatDefinition.interchange {
+            menu.addItem(createFormatMenuItem(for: def))
+        }
+
+        // Add Readable section
+        menu.addItem(createSectionHeader(title: "READABLE"))
+        for def in FormatDefinition.readable {
             menu.addItem(createFormatMenuItem(for: def))
         }
 
         // Add Custom section
         menu.addItem(createSectionHeader(title: "CUSTOM"))
-        let customItem = NSMenuItem(title: "Custom Format...", action: #selector(openSettings), keyEquivalent: "")
-        customItem.target = self
-        if SettingsStore.activeFormatType == .custom {
-            customItem.state = .on
-        }
-
-        let customPreview = TimestampFormatter().string(type: .custom)
-        let customAttr = NSAttributedString(string: customPreview, attributes: [.font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular), .foregroundColor: NSColor.secondaryLabelColor])
-
-        // Setup a custom view to show the text + right aligned preview
-        let container = InteractiveMenuItemView(frame: NSRect(x: 0, y: 0, width: 340, height: 22))
-        let titleLabel = NSTextField(labelWithString: "   Custom Format")
-        titleLabel.font = .systemFont(ofSize: 14)
-        titleLabel.sizeToFit()
-        titleLabel.frame.origin = NSPoint(x: 20, y: (container.frame.height - titleLabel.frame.height) / 2)
-
-        let previewLabel = NSTextField(labelWithAttributedString: customAttr)
-        previewLabel.sizeToFit()
-        previewLabel.frame.origin = NSPoint(x: container.frame.width - previewLabel.frame.width - 20, y: (container.frame.height - previewLabel.frame.height) / 2)
-
-        container.addSubview(titleLabel)
-        container.addSubview(previewLabel)
-
-        let customHostItem = NSMenuItem()
-        customHostItem.view = container
-        customHostItem.action = #selector(selectCustomFormat)
-        customHostItem.target = self
-
-        menu.addItem(customHostItem)
-
-        // If it's custom, add the checkmark logic.
-        // We can't use standard state = .on with a custom view easily without drawing it ourselves,
-        // so we just prepend a checkmark if it's active.
-        if SettingsStore.activeFormatType == .custom {
-            titleLabel.stringValue = "✓ Custom Format"
-        } else {
-            titleLabel.stringValue = "   Custom Format"
-        }
+        menu.addItem(createCustomFormatMenuItem())
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
@@ -974,41 +977,101 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
     }
 
     private func createFormatMenuItem(for def: FormatDefinition) -> NSMenuItem {
-        let container = InteractiveMenuItemView(frame: NSRect(x: 0, y: 0, width: 340, height: 22))
+        createTimestampMenuItem(
+            title: def.label,
+            badgeText: def.badgeText,
+            badgeColor: def.badgeColor,
+            sampleText: TimestampFormatter().string(type: def.type),
+            isSelected: SettingsStore.activeFormatType == def.type,
+            action: #selector(selectFormat(_:)),
+            representedObject: def.type.rawValue
+        )
+    }
 
-        let badgeView = NSImageView(image: createBadgeImage(text: def.badgeText, color: def.badgeColor))
-        badgeView.frame = NSRect(x: 20, y: (container.frame.height - 16) / 2, width: 32, height: 16)
+    private func createCustomFormatMenuItem() -> NSMenuItem {
+        createTimestampMenuItem(
+            title: "Custom Format",
+            badgeText: "CUS",
+            badgeColor: NSColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1.0),
+            sampleText: TimestampFormatter().string(type: .custom),
+            isSelected: SettingsStore.activeFormatType == .custom,
+            action: #selector(selectCustomFormat)
+        )
+    }
 
-        let titleLabel = NSTextField(labelWithString: def.label)
-        titleLabel.font = .systemFont(ofSize: 14)
-        titleLabel.sizeToFit()
-        titleLabel.frame.origin = NSPoint(x: badgeView.frame.maxX + 8, y: (container.frame.height - titleLabel.frame.height) / 2)
+    private func createTimestampMenuItem(
+        title: String,
+        badgeText: String,
+        badgeColor: NSColor,
+        sampleText: String,
+        isSelected: Bool,
+        action: Selector,
+        representedObject: Any? = nil
+    ) -> NSMenuItem {
+        let container = InteractiveMenuItemView(frame: NSRect(x: 0, y: 0, width: MenuRowLayout.width, height: MenuRowLayout.height))
 
-        let sampleText = TimestampFormatter().string(type: def.type)
-        let sampleAttr = NSAttributedString(string: sampleText, attributes: [.font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular), .foregroundColor: NSColor.secondaryLabelColor])
-        let sampleLabel = NSTextField(labelWithAttributedString: sampleAttr)
-        sampleLabel.sizeToFit()
-
-        sampleLabel.frame.origin = NSPoint(x: container.frame.width - sampleLabel.frame.width - 20, y: (container.frame.height - sampleLabel.frame.height) / 2)
-
-        container.addSubview(badgeView)
-        container.addSubview(titleLabel)
-        container.addSubview(sampleLabel)
-
-        if SettingsStore.activeFormatType == def.type {
+        if isSelected {
             let checkmark = NSTextField(labelWithString: "✓")
             checkmark.font = .systemFont(ofSize: 14)
+            checkmark.textColor = .labelColor
             checkmark.sizeToFit()
             checkmark.frame.origin = NSPoint(x: 6, y: (container.frame.height - checkmark.frame.height) / 2)
             container.addSubview(checkmark)
         }
 
+        let badgeView = NSImageView(image: createBadgeImage(text: badgeText, color: badgeColor))
+        badgeView.frame = NSRect(x: MenuRowLayout.badgeX, y: (container.frame.height - 16) / 2, width: MenuRowLayout.badgeWidth, height: 16)
+
+        container.addSubview(badgeView)
+
+        let titleLabel = createMenuLabel(
+            text: title,
+            font: .systemFont(ofSize: 14),
+            color: .labelColor,
+            alignment: .left,
+            lineBreakMode: .byTruncatingTail,
+            frame: NSRect(x: MenuRowLayout.titleX, y: 0, width: MenuRowLayout.titleWidth, height: container.frame.height)
+        )
+
+        let sampleLabel = createMenuLabel(
+            text: sampleText,
+            font: .monospacedDigitSystemFont(ofSize: 11, weight: .regular),
+            color: .secondaryLabelColor,
+            alignment: .right,
+            lineBreakMode: .byTruncatingMiddle,
+            frame: NSRect(x: MenuRowLayout.sampleX, y: 0, width: MenuRowLayout.sampleWidth, height: container.frame.height)
+        )
+        sampleLabel.toolTip = sampleText
+
+        container.addSubview(titleLabel)
+        container.addSubview(sampleLabel)
+
         let item = NSMenuItem()
         item.view = container
-        item.representedObject = def.type.rawValue
-        item.action = #selector(selectFormat(_:))
+        item.representedObject = representedObject
+        item.action = action
         item.target = self
         return item
+    }
+
+    private func createMenuLabel(
+        text: String,
+        font: NSFont,
+        color: NSColor,
+        alignment: NSTextAlignment,
+        lineBreakMode: NSLineBreakMode,
+        frame: NSRect
+    ) -> NSTextField {
+        let label = NSTextField(labelWithString: text)
+        label.font = font
+        label.textColor = color
+        label.alignment = alignment
+        label.lineBreakMode = lineBreakMode
+        label.maximumNumberOfLines = 1
+        label.usesSingleLineMode = true
+        label.sizeToFit()
+        label.frame = NSRect(x: frame.origin.x, y: (frame.height - label.frame.height) / 2, width: frame.width, height: label.frame.height)
+        return label
     }
 
     @objc private func selectFormat(_ sender: NSMenuItem) {
