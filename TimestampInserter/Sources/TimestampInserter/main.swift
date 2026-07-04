@@ -77,7 +77,7 @@ private final class InteractiveMenuItemView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         if isHighlighted {
-            NSColor.selectedMenuItemColor.setFill()
+            NSColor.controlAccentColor.setFill()
             bounds.fill()
         }
     }
@@ -797,7 +797,6 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
     }
 
     private func updateSample() {
-        let formatter = TimestampFormatter()
         // If the user modified the field, preview the custom format string directly.
         // Otherwise, just preview whatever custom format it currently evaluates to.
         let format = cleanedFormat()
@@ -1038,7 +1037,6 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
         if preferencesWindowController == nil {
             preferencesWindowController = PreferencesWindowController { [weak self] in
                 self?.installHotKey()
-                self?.updateMenuLabels()
             }
         }
 
