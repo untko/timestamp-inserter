@@ -90,13 +90,27 @@ Click the `TS` menu-bar item, then choose `Settings...`.
 
 You can change:
 
-- Timestamp format.
+- Timestamp preset.
+- Custom timestamp format.
+- Whether date formats are inserted in local time or UTC.
 - Global keyboard shortcut.
+
+The menu keeps the common choices visible:
+
+- Compact local
+- UK
+- US
+- Unix timestamp
+
+Additional presets, including RFC 3339, email date, milliseconds, German, European, and custom formats, are available in Settings.
+
+When `Insert date formats in UTC` is enabled, date-based formats use the actual UTC time. For example, Bangkok local time `2026-05-15 20:30:45` becomes `2026-05-15-1330` with Compact local. Unix timestamps are unchanged because they are timezone-independent.
 
 Format examples:
 
 ```text
 Compact local       yyyy-MM-dd-HHmm              -> 2026-05-15-2030
+Compact local UTC   yyyy-MM-dd-HHmm              -> 2026-05-15-1330
 RFC 3339 local      yyyy-MM-dd'T'HH:mm:ssXXX     -> 2026-05-15T20:30:45+07:00
 RFC 3339 local ms   yyyy-MM-dd'T'HH:mm:ss.SSSXXX -> 2026-05-15T20:30:45.123+07:00
 RFC 3339 UTC                                      -> 2026-05-15T13:30:45Z

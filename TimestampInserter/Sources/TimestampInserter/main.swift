@@ -29,29 +29,63 @@ private struct FormatDefinition {
     let badgeText: String
     let badgeColor: NSColor
 
+    static let compactLocal = FormatDefinition(type: .compactLocal, label: "Compact local", badgeText: "LOC", badgeColor: NSColor(red: 0.18, green: 0.65, blue: 0.36, alpha: 1.0))
+    static let unixTimestamp = FormatDefinition(type: .seconds, label: "Unix timestamp", badgeText: "UNIX", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0))
+    static let milliseconds = FormatDefinition(type: .milliseconds, label: "Unix milliseconds", badgeText: "MS", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0))
+    static let rfc3339Local = FormatDefinition(type: .rfc3339Local, label: "RFC 3339 local", badgeText: "RFC", badgeColor: NSColor(red: 0.85, green: 0.2, blue: 0.85, alpha: 1.0))
+    static let rfc3339UTC = FormatDefinition(type: .iso8601, label: "RFC 3339 UTC", badgeText: "UTC", badgeColor: NSColor(red: 0.5, green: 0.38, blue: 0.9, alpha: 1.0))
+    static let rfc3339LocalMilliseconds = FormatDefinition(type: .rfc3339LocalMilliseconds, label: "RFC 3339 local ms", badgeText: "MS", badgeColor: NSColor(red: 0.7, green: 0.35, blue: 0.8, alpha: 1.0))
+    static let emailDate = FormatDefinition(type: .rfc2822, label: "Email date", badgeText: "MAIL", badgeColor: NSColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1.0))
+    static let european = FormatDefinition(type: .european, label: "European", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0))
+    static let europeanShort = FormatDefinition(type: .europeanShort, label: "European date", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0))
+    static let germanLong = FormatDefinition(type: .germanLong, label: "German (long)", badgeText: "DE", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0))
+    static let us = FormatDefinition(type: .us, label: "US", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
+    static let usShort = FormatDefinition(type: .usShort, label: "US date", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
+    static let british = FormatDefinition(type: .british, label: "UK", badgeText: "UK", badgeColor: NSColor(red: 1.0, green: 0.6, blue: 0.0, alpha: 1.0))
+    static let unixReadable = FormatDefinition(type: .unixReadable, label: "Unix readable", badgeText: "UNIX", badgeColor: NSColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0))
+
+    static let quickMenu: [FormatDefinition] = [
+        compactLocal,
+        british,
+        us,
+        unixTimestamp
+    ]
+
     static let unix: [FormatDefinition] = [
-        FormatDefinition(type: .seconds, label: "Seconds", badgeText: "TS", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0)),
-        FormatDefinition(type: .milliseconds, label: "Milliseconds", badgeText: "TS", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0))
+        unixTimestamp,
+        milliseconds
     ]
 
     static let interchange: [FormatDefinition] = [
-        FormatDefinition(type: .rfc3339Local, label: "RFC 3339 local", badgeText: "RFC", badgeColor: NSColor(red: 0.85, green: 0.2, blue: 0.85, alpha: 1.0)),
-        FormatDefinition(type: .iso8601, label: "RFC 3339 UTC", badgeText: "UTC", badgeColor: NSColor(red: 0.5, green: 0.38, blue: 0.9, alpha: 1.0)),
-        FormatDefinition(type: .rfc3339LocalMilliseconds, label: "RFC 3339 local ms", badgeText: "MS", badgeColor: NSColor(red: 0.7, green: 0.35, blue: 0.8, alpha: 1.0)),
-        FormatDefinition(type: .rfc2822, label: "Email date", badgeText: "MAIL", badgeColor: NSColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1.0))
+        rfc3339Local,
+        rfc3339UTC,
+        rfc3339LocalMilliseconds,
+        emailDate
     ]
 
     static let readable: [FormatDefinition] = [
-        FormatDefinition(type: .compactLocal, label: "Compact local", badgeText: "LOC", badgeColor: NSColor(red: 0.18, green: 0.65, blue: 0.36, alpha: 1.0)),
-        FormatDefinition(type: .european, label: "European", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
-        FormatDefinition(type: .germanLong, label: "German (long)", badgeText: "DE", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0)),
-        FormatDefinition(type: .us, label: "US", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0)),
-        FormatDefinition(type: .usShort, label: "US (short)", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0)),
-        FormatDefinition(type: .british, label: "British", badgeText: "UK", badgeColor: NSColor(red: 1.0, green: 0.6, blue: 0.0, alpha: 1.0)),
-        FormatDefinition(type: .unixReadable, label: "Unix readable", badgeText: "UNIX", badgeColor: NSColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0))
+        compactLocal,
+        european,
+        europeanShort,
+        germanLong,
+        us,
+        usShort,
+        british,
+        unixReadable
     ]
 
-    static let all = unix + interchange + readable
+    static let all = quickMenu + [
+        milliseconds,
+        rfc3339Local,
+        rfc3339UTC,
+        rfc3339LocalMilliseconds,
+        emailDate,
+        european,
+        europeanShort,
+        germanLong,
+        usShort,
+        unixReadable
+    ]
 }
 
 private func createBadgeImage(text: String, color: NSColor) -> NSImage {
@@ -298,6 +332,7 @@ private struct HotKey: Equatable {
 private enum SettingsStore {
     private static let formatTypeKey = "timestampFormatType"
     private static let formatKey = "timestampFormat"
+    private static let useUTCTimeKey = "useUTCTime"
     private static let hotKeyCodeKey = "hotKeyCode"
     private static let hotKeyModifiersKey = "hotKeyModifiers"
 
@@ -329,6 +364,15 @@ private enum SettingsStore {
         }
     }
 
+    static var useUTCTime: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: useUTCTimeKey)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: useUTCTimeKey)
+        }
+    }
+
     static var hotKey: HotKey {
         get {
             guard UserDefaults.standard.object(forKey: hotKeyCodeKey) != nil,
@@ -354,75 +398,57 @@ private enum SettingsStore {
     static func reset() {
         customFormat = defaultTimestampFormat
         activeFormatType = .compactLocal
+        useUTCTime = false
         hotKey = .defaultValue
     }
 }
 
 private final class TimestampFormatter {
-    private func posixFormatter(format: String) -> DateFormatter {
+    private func formatter(format: String, locale: Locale = Locale(identifier: "en_US_POSIX"), useUTC: Bool) -> DateFormatter {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.locale = locale
+        if useUTC {
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        }
         formatter.dateFormat = format
         return formatter
     }
 
-    func string(from date: Date = Date(), type: FormatType = SettingsStore.activeFormatType) -> String {
+    func string(from date: Date = Date(), type: FormatType = SettingsStore.activeFormatType, useUTC: Bool = SettingsStore.useUTCTime, customFormat: String? = nil) -> String {
         switch type {
         case .seconds:
             return String(Int(date.timeIntervalSince1970))
         case .milliseconds:
             return String(Int(date.timeIntervalSince1970 * 1000))
         case .compactLocal:
-            return posixFormatter(format: defaultTimestampFormat).string(from: date)
+            return formatter(format: defaultTimestampFormat, useUTC: useUTC).string(from: date)
         case .rfc3339Local:
-            return posixFormatter(format: "yyyy-MM-dd'T'HH:mm:ssXXX").string(from: date)
+            return formatter(format: "yyyy-MM-dd'T'HH:mm:ssXXX", useUTC: useUTC).string(from: date)
         case .rfc3339LocalMilliseconds:
-            return posixFormatter(format: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX").string(from: date)
+            return formatter(format: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", useUTC: useUTC).string(from: date)
         case .iso8601:
             let formatter = ISO8601DateFormatter()
             formatter.formatOptions = [.withInternetDateTime]
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
             return formatter.string(from: date)
         case .europeanShort:
-            let formatter = DateFormatter()
-            formatter.dateFormat = "dd.MM.yyyy"
-            return formatter.string(from: date)
+            return formatter(format: "dd.MM.yyyy", useUTC: useUTC).string(from: date)
         case .european:
-            let formatter = DateFormatter()
-            formatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
-            return formatter.string(from: date)
+            return formatter(format: "dd.MM.yyyy HH:mm:ss", useUTC: useUTC).string(from: date)
         case .germanLong:
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "de_DE")
-            formatter.dateFormat = "d. MMMM yyyy, HH:mm 'Uhr'"
-            return formatter.string(from: date)
+            return formatter(format: "d. MMMM yyyy, HH:mm 'Uhr'", locale: Locale(identifier: "de_DE"), useUTC: useUTC).string(from: date)
         case .us:
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US")
-            formatter.dateFormat = "MM/dd/yyyy hh:mm:ss a"
-            return formatter.string(from: date)
+            return formatter(format: "MM/dd/yyyy hh:mm:ss a", locale: Locale(identifier: "en_US"), useUTC: useUTC).string(from: date)
         case .usShort:
-            let formatter = DateFormatter()
-            formatter.dateFormat = "M/d/yyyy"
-            return formatter.string(from: date)
+            return formatter(format: "M/d/yyyy", locale: Locale(identifier: "en_US"), useUTC: useUTC).string(from: date)
         case .british:
-            let formatter = DateFormatter()
-            formatter.dateFormat = "dd/MM/yyyy HH:mm:ss"
-            return formatter.string(from: date)
+            return formatter(format: "dd/MM/yyyy HH:mm:ss", locale: Locale(identifier: "en_GB"), useUTC: useUTC).string(from: date)
         case .rfc2822:
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US_POSIX")
-            formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss Z"
-            return formatter.string(from: date)
+            return formatter(format: "EEE, dd MMM yyyy HH:mm:ss Z", useUTC: useUTC).string(from: date)
         case .unixReadable:
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US_POSIX")
-            formatter.dateFormat = "EEE MMM dd HH:mm:ss zzz yyyy"
-            return formatter.string(from: date)
+            return formatter(format: "EEE MMM dd HH:mm:ss zzz yyyy", useUTC: useUTC).string(from: date)
         case .custom:
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "en_US_POSIX")
-            formatter.dateFormat = SettingsStore.customFormat
-            return formatter.string(from: date)
+            return formatter(format: customFormat ?? SettingsStore.customFormat, useUTC: useUTC).string(from: date)
         }
     }
 }
@@ -642,6 +668,8 @@ private final class HotKeyRecorderView: NSView {
 }
 
 private final class PreferencesWindowController: NSWindowController, NSTextFieldDelegate {
+    private let presetPopup = NSPopUpButton()
+    private let useUTCButton = NSButton(checkboxWithTitle: "Insert date formats in UTC", target: nil, action: nil)
     private let formatField = NSTextField()
     private let sampleLabel = NSTextField(labelWithString: "")
     private let hotKeyRecorder = HotKeyRecorderView(hotKey: SettingsStore.hotKey)
@@ -651,7 +679,7 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         self.onSave = onSave
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 360),
+            contentRect: NSRect(x: 0, y: 0, width: 520, height: 450),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -739,6 +767,17 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
             root.addArrangedSubview(launchAtLoginButton)
         }
 
+        let presetLabel = NSTextField(labelWithString: "Timestamp preset")
+        presetLabel.font = .boldSystemFont(ofSize: 13)
+
+        presetPopup.translatesAutoresizingMaskIntoConstraints = false
+        presetPopup.target = self
+        presetPopup.action = #selector(presetChanged)
+        configurePresetPopup()
+
+        useUTCButton.target = self
+        useUTCButton.action = #selector(useUTCChanged)
+
         let formatLabel = NSTextField(labelWithString: "Custom Timestamp format")
         formatLabel.font = .boldSystemFont(ofSize: 13)
 
@@ -758,6 +797,9 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         sampleLabel.font = .systemFont(ofSize: 12)
         sampleLabel.textColor = .secondaryLabelColor
 
+        root.addArrangedSubview(presetLabel)
+        root.addArrangedSubview(presetPopup)
+        root.addArrangedSubview(useUTCButton)
         root.addArrangedSubview(formatLabel)
         root.addArrangedSubview(formatField)
         root.addArrangedSubview(helpLabel)
@@ -801,12 +843,26 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
 
         NSLayoutConstraint.activate([
             divider.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
+            presetPopup.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
             formatField.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
             hotKeyRecorder.widthAnchor.constraint(equalToConstant: 260),
             hotKeyRecorder.heightAnchor.constraint(equalToConstant: 34),
             buttonRow.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
             spacer.widthAnchor.constraint(greaterThanOrEqualToConstant: 1)
         ])
+    }
+
+    private func configurePresetPopup() {
+        presetPopup.removeAllItems()
+
+        for def in FormatDefinition.all {
+            presetPopup.addItem(withTitle: def.label)
+            presetPopup.lastItem?.representedObject = def.type.rawValue
+        }
+
+        presetPopup.menu?.addItem(.separator())
+        presetPopup.addItem(withTitle: "Custom Format")
+        presetPopup.lastItem?.representedObject = FormatType.custom.rawValue
     }
 
     @available(macOS 13.0, *)
@@ -825,20 +881,23 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
     }
 
     private func loadSettings() {
+        selectPreset(SettingsStore.activeFormatType)
+        useUTCButton.state = SettingsStore.useUTCTime ? .on : .off
         formatField.stringValue = SettingsStore.customFormat
         hotKeyRecorder.hotKey = SettingsStore.hotKey
         updateSample()
     }
 
     private func updateSample() {
-        // If the user modified the field, preview the custom format string directly.
-        // Otherwise, just preview whatever custom format it currently evaluates to.
-        let format = cleanedFormat()
-        let tempDateFormatter = DateFormatter()
-        tempDateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        tempDateFormatter.dateFormat = format
+        let type = selectedPreset()
+        let useUTC = useUTCButton.state == .on
 
-        sampleLabel.stringValue = "Custom Preview: \(tempDateFormatter.string(from: Date()))"
+        if type == .custom {
+            sampleLabel.stringValue = "Preview: \(TimestampFormatter().string(type: .custom, useUTC: useUTC, customFormat: cleanedFormat()))"
+            return
+        }
+
+        sampleLabel.stringValue = "Preview: \(TimestampFormatter().string(type: type, useUTC: useUTC))"
     }
 
     private func cleanedFormat() -> String {
@@ -846,7 +905,23 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         return trimmed.isEmpty ? defaultTimestampFormat : trimmed
     }
 
+    private func selectedPreset() -> FormatType {
+        guard let rawValue = presetPopup.selectedItem?.representedObject as? String,
+              let type = FormatType(rawValue: rawValue) else {
+            return .compactLocal
+        }
+
+        return type
+    }
+
+    private func selectPreset(_ type: FormatType) {
+        if let item = presetPopup.itemArray.first(where: { $0.representedObject as? String == type.rawValue }) {
+            presetPopup.select(item)
+        }
+    }
+
     func controlTextDidChange(_ notification: Notification) {
+        selectPreset(.custom)
         updateSample()
     }
 
@@ -854,9 +929,18 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         updateSample()
     }
 
+    @objc private func presetChanged() {
+        updateSample()
+    }
+
+    @objc private func useUTCChanged() {
+        updateSample()
+    }
+
     @objc private func resetSettings() {
+        selectPreset(.compactLocal)
         formatField.stringValue = defaultTimestampFormat
-        SettingsStore.activeFormatType = .compactLocal
+        useUTCButton.state = .off
         hotKeyRecorder.hotKey = .defaultValue
         updateSample()
     }
@@ -866,16 +950,11 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
     }
 
     @objc private func saveSettings() {
-        let oldCustom = SettingsStore.customFormat
         let newCustom = cleanedFormat()
 
         SettingsStore.customFormat = newCustom
-
-        // If the user typed a new custom format in settings, switch to custom format mode automatically.
-        if oldCustom != newCustom || SettingsStore.activeFormatType == .custom {
-            SettingsStore.activeFormatType = .custom
-        }
-
+        SettingsStore.useUTCTime = useUTCButton.state == .on
+        SettingsStore.activeFormatType = selectedPreset()
         SettingsStore.hotKey = hotKeyRecorder.hotKey
         onSave()
         close()
@@ -903,10 +982,32 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
     private var statusItem: NSStatusItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        guard !terminateIfAnotherInstanceIsRunning() else {
+            return
+        }
+
         NSApp.setActivationPolicy(.accessory)
         installMenuBarItem()
         installHotKey()
         _ = AccessibilityPermission.isTrusted(prompt: true)
+    }
+
+    private func terminateIfAnotherInstanceIsRunning() -> Bool {
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier else {
+            return false
+        }
+
+        let currentProcessIdentifier = ProcessInfo.processInfo.processIdentifier
+        let otherInstances = NSRunningApplication
+            .runningApplications(withBundleIdentifier: bundleIdentifier)
+            .filter { $0.processIdentifier != currentProcessIdentifier && !$0.isTerminated }
+
+        if otherInstances.isEmpty {
+            return false
+        }
+
+        NSApp.terminate(nil)
+        return true
     }
 
     private func installMenuBarItem() {
@@ -923,27 +1024,15 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
 
-        // Add Unix Timestamps section
-        menu.addItem(createSectionHeader(title: "UNIX TIMESTAMP"))
-        for def in FormatDefinition.unix {
+        menu.addItem(createSectionHeader(title: "FORMAT"))
+        for def in FormatDefinition.quickMenu {
             menu.addItem(createFormatMenuItem(for: def))
         }
 
-        // Add Interchange section
-        menu.addItem(createSectionHeader(title: "INTERCHANGE"))
-        for def in FormatDefinition.interchange {
-            menu.addItem(createFormatMenuItem(for: def))
-        }
-
-        // Add Readable section
-        menu.addItem(createSectionHeader(title: "READABLE"))
-        for def in FormatDefinition.readable {
-            menu.addItem(createFormatMenuItem(for: def))
-        }
-
-        // Add Custom section
-        menu.addItem(createSectionHeader(title: "CUSTOM"))
-        menu.addItem(createCustomFormatMenuItem())
+        let utcItem = NSMenuItem(title: "Use UTC time", action: #selector(toggleUseUTCTime), keyEquivalent: "")
+        utcItem.target = self
+        utcItem.state = SettingsStore.useUTCTime ? .on : .off
+        menu.addItem(utcItem)
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
@@ -953,27 +1042,38 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
         ))
 
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(
+        let settingsItem = NSMenuItem(
             title: "Settings...",
             action: #selector(openSettings),
             keyEquivalent: ","
-        ))
-        menu.addItem(NSMenuItem(
+        )
+        settingsItem.target = self
+        menu.addItem(settingsItem)
+
+        let accessibilityItem = NSMenuItem(
             title: "Open Accessibility Settings",
             action: #selector(openAccessibilitySettings),
             keyEquivalent: ""
-        ))
+        )
+        accessibilityItem.target = self
+        menu.addItem(accessibilityItem)
+
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(
+        let aboutItem = NSMenuItem(
             title: "About Timestamp Inserter",
             action: #selector(openAbout),
             keyEquivalent: ""
-        ))
-        menu.addItem(NSMenuItem(
+        )
+        aboutItem.target = self
+        menu.addItem(aboutItem)
+
+        let quitItem = NSMenuItem(
             title: "Quit",
             action: #selector(quit),
             keyEquivalent: "q"
-        ))
+        )
+        quitItem.target = self
+        menu.addItem(quitItem)
     }
 
     private func createFormatMenuItem(for def: FormatDefinition) -> NSMenuItem {
@@ -985,17 +1085,6 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
             isSelected: SettingsStore.activeFormatType == def.type,
             action: #selector(selectFormat(_:)),
             representedObject: def.type.rawValue
-        )
-    }
-
-    private func createCustomFormatMenuItem() -> NSMenuItem {
-        createTimestampMenuItem(
-            title: "Custom Format",
-            badgeText: "CUS",
-            badgeColor: NSColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1.0),
-            sampleText: TimestampFormatter().string(type: .custom),
-            isSelected: SettingsStore.activeFormatType == .custom,
-            action: #selector(selectCustomFormat)
         )
     }
 
@@ -1080,8 +1169,8 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
         }
     }
 
-    @objc private func selectCustomFormat(_ sender: NSMenuItem) {
-        SettingsStore.activeFormatType = .custom
+    @objc private func toggleUseUTCTime(_ sender: NSMenuItem) {
+        SettingsStore.useUTCTime.toggle()
     }
 
     private func installHotKey() {
@@ -1111,6 +1200,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
     }
 
     @objc private func openAbout() {
+        NSApp.activate(ignoringOtherApps: true)
         NSApp.orderFrontStandardAboutPanel(nil)
     }
 
