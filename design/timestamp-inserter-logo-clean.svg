@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Timestamp Inserter logo</title>
+  <desc id="desc">A clean monochrome logo with a round clock dial, rounded L-shaped clock hand, sculpted stand, and separated lower bar.</desc>
+
+  <defs>
+    <!-- The mask keeps the dial opening transparent instead of painting it white. -->
+    <mask id="dial-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="#000000"/>
+      <circle cx="256" cy="130" r="110" fill="#ffffff"/>
+      <path d="M203 204C203 243 187 275 151 299C135 309 117 316 98 316H72C45 316 24 338 24 365V370C24 377 31 382 38 382H474C481 382 488 377 488 370V365C488 338 467 316 440 316H414C395 316 377 309 361 299C325 275 309 243 309 204Z" fill="#ffffff"/>
+      <rect x="60" y="405" width="392" height="62" rx="12" fill="#ffffff"/>
+      <circle cx="256" cy="130" r="86" fill="#000000"/>
+    </mask>
+  </defs>
+
+  <!-- Change this color to create a colorway; the default is near-black. -->
+  <g color="#111111">
+    <rect width="512" height="512" fill="currentColor" mask="url(#dial-cutout)"/>
+
+    <!-- Rounded clock hand: twelve o'clock to nine o'clock. -->
+    <path d="M256 77V130H203" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
