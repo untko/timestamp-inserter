@@ -26,23 +26,21 @@ private enum FormatType: String, Equatable {
 private struct FormatDefinition {
     let type: FormatType
     let label: String
-    let badgeText: String
-    let badgeColor: NSColor
 
-    static let compactLocal = FormatDefinition(type: .compactLocal, label: "Compact local", badgeText: "LOC", badgeColor: NSColor(red: 0.18, green: 0.65, blue: 0.36, alpha: 1.0))
-    static let unixTimestamp = FormatDefinition(type: .seconds, label: "Unix timestamp", badgeText: "UNIX", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0))
-    static let milliseconds = FormatDefinition(type: .milliseconds, label: "Unix milliseconds", badgeText: "MS", badgeColor: NSColor(red: 0.12, green: 0.6, blue: 0.98, alpha: 1.0))
-    static let rfc3339Local = FormatDefinition(type: .rfc3339Local, label: "RFC 3339 local", badgeText: "RFC", badgeColor: NSColor(red: 0.85, green: 0.2, blue: 0.85, alpha: 1.0))
-    static let rfc3339UTC = FormatDefinition(type: .iso8601, label: "RFC 3339 UTC", badgeText: "UTC", badgeColor: NSColor(red: 0.5, green: 0.38, blue: 0.9, alpha: 1.0))
-    static let rfc3339LocalMilliseconds = FormatDefinition(type: .rfc3339LocalMilliseconds, label: "RFC 3339 local ms", badgeText: "MS", badgeColor: NSColor(red: 0.7, green: 0.35, blue: 0.8, alpha: 1.0))
-    static let emailDate = FormatDefinition(type: .rfc2822, label: "Email date", badgeText: "MAIL", badgeColor: NSColor(red: 0.45, green: 0.45, blue: 0.45, alpha: 1.0))
-    static let european = FormatDefinition(type: .european, label: "European", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0))
-    static let europeanShort = FormatDefinition(type: .europeanShort, label: "European date", badgeText: "EU", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0))
-    static let germanLong = FormatDefinition(type: .germanLong, label: "German (long)", badgeText: "DE", badgeColor: NSColor(red: 0.4, green: 0.5, blue: 1.0, alpha: 1.0))
-    static let us = FormatDefinition(type: .us, label: "US", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
-    static let usShort = FormatDefinition(type: .usShort, label: "US date", badgeText: "US", badgeColor: NSColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1.0))
-    static let british = FormatDefinition(type: .british, label: "UK", badgeText: "UK", badgeColor: NSColor(red: 1.0, green: 0.6, blue: 0.0, alpha: 1.0))
-    static let unixReadable = FormatDefinition(type: .unixReadable, label: "Unix readable", badgeText: "UNIX", badgeColor: NSColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0))
+    static let compactLocal = FormatDefinition(type: .compactLocal, label: "Compact local")
+    static let unixTimestamp = FormatDefinition(type: .seconds, label: "Unix timestamp")
+    static let milliseconds = FormatDefinition(type: .milliseconds, label: "Unix milliseconds")
+    static let rfc3339Local = FormatDefinition(type: .rfc3339Local, label: "RFC 3339 local")
+    static let rfc3339UTC = FormatDefinition(type: .iso8601, label: "RFC 3339 UTC (ISO 8601)")
+    static let rfc3339LocalMilliseconds = FormatDefinition(type: .rfc3339LocalMilliseconds, label: "RFC 3339 local ms")
+    static let emailDate = FormatDefinition(type: .rfc2822, label: "Email date (RFC 2822)")
+    static let european = FormatDefinition(type: .european, label: "European")
+    static let europeanShort = FormatDefinition(type: .europeanShort, label: "European date")
+    static let germanLong = FormatDefinition(type: .germanLong, label: "German (long)")
+    static let us = FormatDefinition(type: .us, label: "US")
+    static let usShort = FormatDefinition(type: .usShort, label: "US date")
+    static let british = FormatDefinition(type: .british, label: "UK")
+    static let unixReadable = FormatDefinition(type: .unixReadable, label: "Unix readable")
 
     static let quickMenu: [FormatDefinition] = [
         compactLocal,
@@ -74,127 +72,22 @@ private struct FormatDefinition {
         unixReadable
     ]
 
-    static let all = quickMenu + [
-        milliseconds,
+    static let all: [FormatDefinition] = [
+        compactLocal,
         rfc3339Local,
         rfc3339UTC,
         rfc3339LocalMilliseconds,
         emailDate,
+        unixTimestamp,
+        milliseconds,
+        british,
+        us,
+        usShort,
         european,
         europeanShort,
         germanLong,
-        usShort,
         unixReadable
     ]
-}
-
-private func createBadgeImage(text: String, color: NSColor) -> NSImage {
-    let size = NSSize(width: 32, height: 16)
-    let image = NSImage(size: size)
-    image.lockFocus()
-
-    let path = NSBezierPath(roundedRect: NSRect(origin: .zero, size: size), xRadius: 4, yRadius: 4)
-    color.setFill()
-    path.fill()
-
-    let paragraph = NSMutableParagraphStyle()
-    paragraph.alignment = .center
-    let attributes: [NSAttributedString.Key: Any] = [
-        .font: NSFont.systemFont(ofSize: 10, weight: .bold),
-        .foregroundColor: NSColor.white,
-        .paragraphStyle: paragraph
-    ]
-    let attrString = NSAttributedString(string: text, attributes: attributes)
-    let rect = NSRect(x: 0, y: (size.height - attrString.size().height) / 2 - 0.5, width: size.width, height: attrString.size().height)
-    attrString.draw(in: rect)
-
-    image.unlockFocus()
-    image.isTemplate = false
-    return image
-}
-
-private final class InteractiveMenuItemView: NSView {
-    private var isHighlighted = false
-
-    override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
-        if isHighlighted {
-            NSColor.controlAccentColor.setFill()
-            bounds.fill()
-        }
-    }
-
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        trackingAreas.forEach { removeTrackingArea($0) }
-        let area = NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInActiveApp], owner: self, userInfo: nil)
-        addTrackingArea(area)
-    }
-
-    override func mouseEntered(with event: NSEvent) {
-        isHighlighted = true
-        needsDisplay = true
-    }
-
-    override func mouseExited(with event: NSEvent) {
-        isHighlighted = false
-        needsDisplay = true
-    }
-
-    override func mouseUp(with event: NSEvent) {
-        isHighlighted = false
-        needsDisplay = true
-
-        guard let item = enclosingMenuItem, let menu = item.menu else { return }
-        menu.cancelTracking()
-
-        if let target = item.target as? NSObject, let action = item.action {
-            target.perform(action, with: item)
-        }
-    }
-}
-
-private enum MenuRowLayout {
-    static let width: CGFloat = 440
-    static let height: CGFloat = 22
-    static let badgeX: CGFloat = 20
-    static let badgeWidth: CGFloat = 32
-    static let titleX: CGFloat = 60
-    static let titleWidth: CGFloat = 145
-    static let sampleX: CGFloat = 214
-    static let rightPadding: CGFloat = 20
-    static let sampleWidth: CGFloat = width - sampleX - rightPadding
-}
-
-private func createSectionHeader(title: String) -> NSMenuItem {
-    let view = NSView(frame: NSRect(x: 0, y: 0, width: MenuRowLayout.width, height: 22))
-
-    let line1 = NSBox(frame: NSRect(x: 10, y: 11, width: 40, height: 1))
-    line1.boxType = .custom
-    line1.fillColor = NSColor.separatorColor
-    line1.borderWidth = 0
-
-    let label = NSTextField(labelWithString: title)
-    label.font = .systemFont(ofSize: 10, weight: .bold)
-    label.textColor = NSColor.secondaryLabelColor
-    label.sizeToFit()
-    label.frame.origin = NSPoint(x: line1.frame.maxX + 8, y: (view.frame.height - label.frame.height) / 2)
-
-    let line2Width = max(20, view.frame.width - label.frame.maxX - 10)
-    let line2 = NSBox(frame: NSRect(x: label.frame.maxX + 8, y: 11, width: line2Width, height: 1))
-    line2.autoresizingMask = .width
-    line2.boxType = .custom
-    line2.fillColor = NSColor.separatorColor
-    line2.borderWidth = 0
-
-    view.addSubview(line1)
-    view.addSubview(label)
-    view.addSubview(line2)
-
-    let item = NSMenuItem()
-    item.view = view
-    item.isEnabled = false
-    return item
 }
 
 private func fourCharacterCode(_ string: String) -> OSType {
@@ -232,6 +125,24 @@ private struct HotKey: Equatable {
 
         parts.append(Self.keyName(for: keyCode))
         return parts.joined(separator: "-")
+    }
+
+    var glyphString: String {
+        var glyphs = ""
+        if modifiers & UInt32(controlKey) != 0 {
+            glyphs += "⌃"
+        }
+        if modifiers & UInt32(optionKey) != 0 {
+            glyphs += "⌥"
+        }
+        if modifiers & UInt32(shiftKey) != 0 {
+            glyphs += "⇧"
+        }
+        if modifiers & UInt32(cmdKey) != 0 {
+            glyphs += "⌘"
+        }
+        glyphs += Self.keyGlyph(for: keyCode)
+        return glyphs
     }
 
     static func modifiers(from flags: NSEvent.ModifierFlags) -> UInt32 {
@@ -325,6 +236,22 @@ private struct HotKey: Equatable {
         case kVK_ANSI_Slash: return "/"
         case kVK_ANSI_Grave: return "`"
         default: return "Key \(keyCode)"
+        }
+    }
+
+    static func keyGlyph(for keyCode: UInt32) -> String {
+        switch Int(keyCode) {
+        case kVK_Space: return "␣"
+        case kVK_Return: return "↩"
+        case kVK_Tab: return "⇥"
+        case kVK_Escape: return "⎋"
+        case kVK_Delete: return "⌫"
+        case kVK_ForwardDelete: return "⌦"
+        case kVK_LeftArrow: return "←"
+        case kVK_RightArrow: return "→"
+        case kVK_UpArrow: return "↑"
+        case kVK_DownArrow: return "↓"
+        default: return keyName(for: keyCode)
         }
     }
 }
@@ -642,8 +569,8 @@ private final class HotKeyRecorderView: NSView {
         super.draw(dirtyRect)
 
         let bounds = self.bounds.insetBy(dx: 1, dy: 1)
-        let path = NSBezierPath(roundedRect: bounds, xRadius: 6, yRadius: 6)
-        let isFocused = window?.firstResponder === self
+        let path = NSBezierPath(roundedRect: bounds, xRadius: 8, yRadius: 8)
+        let isFocused = isRecording || window?.firstResponder === self
 
         (isFocused ? NSColor.controlAccentColor.withAlphaComponent(0.12) : NSColor.controlBackgroundColor).setFill()
         path.fill()
@@ -652,13 +579,13 @@ private final class HotKeyRecorderView: NSView {
         path.lineWidth = isFocused ? 2 : 1
         path.stroke()
 
-        let text = isRecording ? "Press shortcut..." : hotKey.displayString
+        let text = isRecording ? "Press keys…" : hotKey.glyphString
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
 
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.monospacedSystemFont(ofSize: 13, weight: .medium),
-            .foregroundColor: NSColor.labelColor,
+            .font: NSFont.systemFont(ofSize: 14, weight: .semibold),
+            .foregroundColor: isRecording ? NSColor.secondaryLabelColor : NSColor.labelColor,
             .paragraphStyle: paragraph
         ]
         let attributed = NSAttributedString(string: text, attributes: attributes)
@@ -667,19 +594,65 @@ private final class HotKeyRecorderView: NSView {
     }
 }
 
+private final class AppIconSquircleView: NSView {
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        wantsLayer = true
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+
+        let squirclePath = NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 1), xRadius: 13, yRadius: 13)
+
+        let isDark = effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        let bgColor = isDark
+            ? NSColor(white: 0.22, alpha: 1.0)
+            : NSColor(white: 0.94, alpha: 1.0)
+        let borderColor = isDark
+            ? NSColor(white: 0.38, alpha: 0.6)
+            : NSColor(white: 0.8, alpha: 0.8)
+
+        bgColor.setFill()
+        squirclePath.fill()
+
+        borderColor.setStroke()
+        squirclePath.lineWidth = 1
+        squirclePath.stroke()
+
+        let iconRect = bounds.insetBy(dx: 11, dy: 11)
+        if let icon = Bundle.main.image(forResource: "MenuBarIcon") ?? NSImage(named: "MenuBarIcon") {
+            let tinted = icon.copy() as! NSImage
+            tinted.isTemplate = true
+            tinted.draw(in: iconRect)
+        } else if let icon = NSImage(named: "AppIcon") {
+            icon.draw(in: iconRect)
+        }
+    }
+}
+
 private final class PreferencesWindowController: NSWindowController, NSTextFieldDelegate {
     private let presetPopup = NSPopUpButton()
-    private let useUTCButton = NSButton(checkboxWithTitle: "Insert date formats in UTC", target: nil, action: nil)
+    private let useUTCButton = NSButton(checkboxWithTitle: "Use UTC timezone", target: nil, action: nil)
     private let formatField = NSTextField()
-    private let sampleLabel = NSTextField(labelWithString: "")
+    private let livePreviewText = NSTextField(labelWithString: "")
     private let hotKeyRecorder = HotKeyRecorderView(hotKey: SettingsStore.hotKey)
-    private let onSave: () -> Void
+    private var launchAtLoginButton: NSButton?
+    private let accessibilityStatusDot = NSView()
+    private let accessibilityStatusLabel = NSTextField(labelWithString: "")
+    private let accessibilityButton = NSButton(title: "System Settings…", target: nil, action: nil)
+    private let onChange: () -> Void
 
-    init(onSave: @escaping () -> Void) {
-        self.onSave = onSave
+    init(onChange: @escaping () -> Void) {
+        self.onChange = onChange
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 450),
+            contentRect: NSRect(x: 0, y: 0, width: 480, height: 530),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -698,22 +671,32 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
 
     func show() {
         loadSettings()
+        updateAccessibilityStatus()
         window?.center()
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    private func createCardBox() -> NSBox {
+        let box = NSBox()
+        box.boxType = .custom
+        box.cornerRadius = 10
+        box.borderWidth = 1
+        box.borderColor = NSColor.separatorColor.withAlphaComponent(0.6)
+        box.fillColor = NSColor.controlBackgroundColor.withAlphaComponent(0.4)
+        box.translatesAutoresizingMaskIntoConstraints = false
+        return box
+    }
+
     private func buildUI() {
-        guard let contentView = window?.contentView else {
-            return
-        }
+        guard let contentView = window?.contentView else { return }
 
         let root = NSStackView()
         root.orientation = .vertical
         root.alignment = .leading
         root.spacing = 14
         root.translatesAutoresizingMaskIntoConstraints = false
-        root.edgeInsets = NSEdgeInsets(top: 18, left: 20, bottom: 18, right: 20)
+        root.edgeInsets = NSEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
         contentView.addSubview(root)
 
         NSLayoutConstraint.activate([
@@ -723,52 +706,67 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
             root.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
 
+        // 1. Header with Dark-Mode Compatible Squircle Tile
         let headerStack = NSStackView()
         headerStack.orientation = .horizontal
         headerStack.alignment = .centerY
-        headerStack.spacing = 12
+        headerStack.spacing = 14
+        headerStack.translatesAutoresizingMaskIntoConstraints = false
 
-        let appIconImage = NSImage(named: "AppIcon") ?? NSImage()
-        let appIconView = NSImageView(image: appIconImage)
-        appIconView.translatesAutoresizingMaskIntoConstraints = false
+        let squircleIcon = AppIconSquircleView()
+        squircleIcon.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            appIconView.widthAnchor.constraint(equalToConstant: 64),
-            appIconView.heightAnchor.constraint(equalToConstant: 64)
+            squircleIcon.widthAnchor.constraint(equalToConstant: 48),
+            squircleIcon.heightAnchor.constraint(equalToConstant: 48)
         ])
 
         let titleStack = NSStackView()
         titleStack.orientation = .vertical
         titleStack.alignment = .leading
-        titleStack.spacing = 4
+        titleStack.spacing = 2
+
+        let titleRow = NSStackView()
+        titleRow.orientation = .horizontal
+        titleRow.alignment = .centerY
+        titleRow.spacing = 6
 
         let appTitleLabel = NSTextField(labelWithString: "Timestamp Inserter")
-        appTitleLabel.font = .systemFont(ofSize: 18, weight: .bold)
+        appTitleLabel.font = .systemFont(ofSize: 16, weight: .bold)
 
-        let descriptionLabel = NSTextField(labelWithString: "Insert timestamps directly into any text field.")
-        descriptionLabel.font = .systemFont(ofSize: 12)
+        let versionLabel = NSTextField(labelWithString: "v1.0")
+        versionLabel.font = .monospacedSystemFont(ofSize: 10, weight: .medium)
+        versionLabel.textColor = .secondaryLabelColor
+
+        titleRow.addArrangedSubview(appTitleLabel)
+        titleRow.addArrangedSubview(versionLabel)
+
+        let descriptionLabel = NSTextField(labelWithString: "Inserts formatted timestamps directly into any focused text field.")
+        descriptionLabel.font = .systemFont(ofSize: 11)
         descriptionLabel.textColor = .secondaryLabelColor
 
-        titleStack.addArrangedSubview(appTitleLabel)
+        titleStack.addArrangedSubview(titleRow)
         titleStack.addArrangedSubview(descriptionLabel)
 
-        headerStack.addArrangedSubview(appIconView)
+        headerStack.addArrangedSubview(squircleIcon)
         headerStack.addArrangedSubview(titleStack)
-
         root.addArrangedSubview(headerStack)
 
-        let divider = NSBox()
-        divider.boxType = .separator
-        divider.translatesAutoresizingMaskIntoConstraints = false
-        root.addArrangedSubview(divider)
+        // 2. Card 1: Active Format & Live Preview
+        let formatCard = createCardBox()
+        let formatCardStack = NSStackView()
+        formatCardStack.orientation = .vertical
+        formatCardStack.alignment = .leading
+        formatCardStack.spacing = 10
+        formatCardStack.translatesAutoresizingMaskIntoConstraints = false
+        formatCardStack.edgeInsets = NSEdgeInsets(top: 12, left: 14, bottom: 12, right: 14)
+        formatCard.contentView = formatCardStack
 
-        if #available(macOS 13.0, *) {
-            let launchAtLoginButton = NSButton(checkboxWithTitle: "Launch at login", target: self, action: #selector(toggleLaunchAtLogin))
-            launchAtLoginButton.state = SMAppService.mainApp.status == .enabled ? .on : .off
-            root.addArrangedSubview(launchAtLoginButton)
-        }
+        let formatHeaderLabel = NSTextField(labelWithString: "ACTIVE FORMAT")
+        formatHeaderLabel.font = .systemFont(ofSize: 10, weight: .bold)
+        formatHeaderLabel.textColor = .secondaryLabelColor
 
-        let presetLabel = NSTextField(labelWithString: "Timestamp preset")
-        presetLabel.font = .boldSystemFont(ofSize: 13)
+        let presetLabel = NSTextField(labelWithString: "Preset")
+        presetLabel.font = .systemFont(ofSize: 12, weight: .medium)
 
         presetPopup.translatesAutoresizingMaskIntoConstraints = false
         presetPopup.target = self
@@ -777,91 +775,212 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
 
         useUTCButton.target = self
         useUTCButton.action = #selector(useUTCChanged)
+        useUTCButton.font = .systemFont(ofSize: 12)
 
-        let formatLabel = NSTextField(labelWithString: "Custom Timestamp format")
-        formatLabel.font = .boldSystemFont(ofSize: 13)
+        let customFormatLabel = NSTextField(labelWithString: "Custom Pattern")
+        customFormatLabel.font = .systemFont(ofSize: 12, weight: .medium)
 
         formatField.delegate = self
-        formatField.font = .monospacedSystemFont(ofSize: 13, weight: .regular)
+        formatField.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         formatField.placeholderString = defaultTimestampFormat
         formatField.translatesAutoresizingMaskIntoConstraints = false
         formatField.target = self
         formatField.action = #selector(formatFieldChanged)
 
-        let helpLabel = NSTextField(labelWithString: "Examples: yyyy-MM-dd-HHmm or yyyy-MM-dd'T'HH:mm:ssXXX for RFC 3339 local. Editing this will switch you to Custom.")
-        helpLabel.font = .systemFont(ofSize: 11)
-        helpLabel.textColor = .secondaryLabelColor
-        helpLabel.lineBreakMode = .byWordWrapping
-        helpLabel.maximumNumberOfLines = 2
+        let formatHelpLabel = NSTextField(labelWithString: "Tokens: yyyy (year), MM (month), dd (day), HHmm (24h time), SSS (ms)")
+        formatHelpLabel.font = .systemFont(ofSize: 10)
+        formatHelpLabel.textColor = .secondaryLabelColor
 
-        sampleLabel.font = .systemFont(ofSize: 12)
-        sampleLabel.textColor = .secondaryLabelColor
+        // Live Output Preview Callout
+        let previewCallout = NSBox()
+        previewCallout.boxType = .custom
+        previewCallout.cornerRadius = 6
+        previewCallout.borderWidth = 1
+        previewCallout.borderColor = NSColor.separatorColor.withAlphaComponent(0.4)
+        previewCallout.fillColor = NSColor.windowBackgroundColor.withAlphaComponent(0.6)
+        previewCallout.translatesAutoresizingMaskIntoConstraints = false
 
-        root.addArrangedSubview(presetLabel)
-        root.addArrangedSubview(presetPopup)
-        root.addArrangedSubview(useUTCButton)
-        root.addArrangedSubview(formatLabel)
-        root.addArrangedSubview(formatField)
-        root.addArrangedSubview(helpLabel)
-        root.addArrangedSubview(sampleLabel)
+        let previewStack = NSStackView()
+        previewStack.orientation = .horizontal
+        previewStack.alignment = .centerY
+        previewStack.distribution = .fill
+        previewStack.translatesAutoresizingMaskIntoConstraints = false
+        previewStack.edgeInsets = NSEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+        previewCallout.contentView = previewStack
 
-        let hotKeyLabel = NSTextField(labelWithString: "Keyboard shortcut")
-        hotKeyLabel.font = .boldSystemFont(ofSize: 13)
+        let previewTextStack = NSStackView()
+        previewTextStack.orientation = .vertical
+        previewTextStack.alignment = .leading
+        previewTextStack.spacing = 2
+
+        let previewTitle = NSTextField(labelWithString: "LIVE OUTPUT PREVIEW")
+        previewTitle.font = .systemFont(ofSize: 9, weight: .bold)
+        previewTitle.textColor = .secondaryLabelColor
+
+        livePreviewText.font = .monospacedSystemFont(ofSize: 13, weight: .semibold)
+        livePreviewText.textColor = .controlAccentColor
+
+        previewTextStack.addArrangedSubview(previewTitle)
+        previewTextStack.addArrangedSubview(livePreviewText)
+
+        let badgeLabel = NSTextField(labelWithString: "Types this text")
+        badgeLabel.font = .systemFont(ofSize: 10)
+        badgeLabel.textColor = .tertiaryLabelColor
+
+        previewStack.addArrangedSubview(previewTextStack)
+        previewStack.addArrangedSubview(badgeLabel)
+
+        formatCardStack.addArrangedSubview(formatHeaderLabel)
+        formatCardStack.addArrangedSubview(presetLabel)
+        formatCardStack.addArrangedSubview(presetPopup)
+        formatCardStack.addArrangedSubview(useUTCButton)
+        formatCardStack.addArrangedSubview(customFormatLabel)
+        formatCardStack.addArrangedSubview(formatField)
+        formatCardStack.addArrangedSubview(formatHelpLabel)
+        formatCardStack.addArrangedSubview(previewCallout)
+
+        root.addArrangedSubview(formatCard)
+
+        // 3. Card 2: Shortcut & Launch
+        let shortcutCard = createCardBox()
+        let shortcutCardStack = NSStackView()
+        shortcutCardStack.orientation = .vertical
+        shortcutCardStack.alignment = .leading
+        shortcutCardStack.spacing = 10
+        shortcutCardStack.translatesAutoresizingMaskIntoConstraints = false
+        shortcutCardStack.edgeInsets = NSEdgeInsets(top: 12, left: 14, bottom: 12, right: 14)
+        shortcutCard.contentView = shortcutCardStack
+
+        let shortcutHeaderLabel = NSTextField(labelWithString: "SHORTCUT & LAUNCH")
+        shortcutHeaderLabel.font = .systemFont(ofSize: 10, weight: .bold)
+        shortcutHeaderLabel.textColor = .secondaryLabelColor
+
+        let shortcutRow = NSStackView()
+        shortcutRow.orientation = .horizontal
+        shortcutRow.alignment = .centerY
+        shortcutRow.spacing = 10
+        shortcutRow.translatesAutoresizingMaskIntoConstraints = false
+
+        let shortcutTextStack = NSStackView()
+        shortcutTextStack.orientation = .vertical
+        shortcutTextStack.alignment = .leading
+        shortcutTextStack.spacing = 2
+
+        let shortcutTitle = NSTextField(labelWithString: "Global Shortcut")
+        shortcutTitle.font = .systemFont(ofSize: 12, weight: .medium)
+        let shortcutDesc = NSTextField(labelWithString: "Works globally in any application.")
+        shortcutDesc.font = .systemFont(ofSize: 10)
+        shortcutDesc.textColor = .secondaryLabelColor
+
+        shortcutTextStack.addArrangedSubview(shortcutTitle)
+        shortcutTextStack.addArrangedSubview(shortcutDesc)
 
         hotKeyRecorder.translatesAutoresizingMaskIntoConstraints = false
         hotKeyRecorder.onChange = { [weak self] _ in
-            self?.updateSample()
+            self?.hotKeyChanged()
         }
 
-        let hotKeyHelpLabel = NSTextField(labelWithString: "Click the field, then press the shortcut you want to use.")
-        hotKeyHelpLabel.font = .systemFont(ofSize: 11)
-        hotKeyHelpLabel.textColor = .secondaryLabelColor
+        shortcutRow.addArrangedSubview(shortcutTextStack)
+        shortcutRow.addArrangedSubview(hotKeyRecorder)
 
-        root.addArrangedSubview(hotKeyLabel)
-        root.addArrangedSubview(hotKeyRecorder)
-        root.addArrangedSubview(hotKeyHelpLabel)
+        shortcutCardStack.addArrangedSubview(shortcutHeaderLabel)
+        shortcutCardStack.addArrangedSubview(shortcutRow)
 
-        let buttonRow = NSStackView()
-        buttonRow.orientation = .horizontal
-        buttonRow.alignment = .centerY
-        buttonRow.spacing = 8
-        buttonRow.translatesAutoresizingMaskIntoConstraints = false
+        if #available(macOS 13.0, *) {
+            let launchButton = NSButton(checkboxWithTitle: "Launch at login", target: self, action: #selector(toggleLaunchAtLogin))
+            launchButton.state = SMAppService.mainApp.status == .enabled ? .on : .off
+            launchButton.font = .systemFont(ofSize: 12)
+            self.launchAtLoginButton = launchButton
+            shortcutCardStack.addArrangedSubview(launchButton)
+        }
 
-        let resetButton = NSButton(title: "Reset", target: self, action: #selector(resetSettings))
-        let cancelButton = NSButton(title: "Cancel", target: self, action: #selector(cancel))
-        let saveButton = NSButton(title: "Save", target: self, action: #selector(saveSettings))
-        saveButton.keyEquivalent = "\r"
+        root.addArrangedSubview(shortcutCard)
 
-        let spacer = NSView()
-        spacer.translatesAutoresizingMaskIntoConstraints = false
-        buttonRow.addArrangedSubview(spacer)
-        buttonRow.addArrangedSubview(resetButton)
-        buttonRow.addArrangedSubview(cancelButton)
-        buttonRow.addArrangedSubview(saveButton)
+        // 4. Card 3: Permissions
+        let permCard = createCardBox()
+        let permCardStack = NSStackView()
+        permCardStack.orientation = .horizontal
+        permCardStack.alignment = .centerY
+        permCardStack.distribution = .fill
+        permCardStack.translatesAutoresizingMaskIntoConstraints = false
+        permCardStack.edgeInsets = NSEdgeInsets(top: 10, left: 14, bottom: 10, right: 14)
+        permCard.contentView = permCardStack
 
-        root.addArrangedSubview(buttonRow)
+        let permLeftStack = NSStackView()
+        permLeftStack.orientation = .horizontal
+        permLeftStack.alignment = .centerY
+        permLeftStack.spacing = 8
 
+        accessibilityStatusDot.wantsLayer = true
+        accessibilityStatusDot.layer?.cornerRadius = 4
+        accessibilityStatusDot.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            divider.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
-            presetPopup.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
-            formatField.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
-            hotKeyRecorder.widthAnchor.constraint(equalToConstant: 260),
-            hotKeyRecorder.heightAnchor.constraint(equalToConstant: 34),
-            buttonRow.widthAnchor.constraint(equalTo: root.widthAnchor, constant: -40),
-            spacer.widthAnchor.constraint(greaterThanOrEqualToConstant: 1)
+            accessibilityStatusDot.widthAnchor.constraint(equalToConstant: 8),
+            accessibilityStatusDot.heightAnchor.constraint(equalToConstant: 8)
+        ])
+
+        accessibilityStatusLabel.font = .systemFont(ofSize: 11, weight: .medium)
+        permLeftStack.addArrangedSubview(accessibilityStatusDot)
+        permLeftStack.addArrangedSubview(accessibilityStatusLabel)
+
+        accessibilityButton.bezelStyle = .inline
+        accessibilityButton.font = .systemFont(ofSize: 11)
+        accessibilityButton.target = self
+        accessibilityButton.action = #selector(openSystemSettings)
+
+        permCardStack.addArrangedSubview(permLeftStack)
+        permCardStack.addArrangedSubview(accessibilityButton)
+
+        root.addArrangedSubview(permCard)
+
+        // 5. Footer (Auto-save notice + Reset)
+        let footerRow = NSStackView()
+        footerRow.orientation = .horizontal
+        footerRow.alignment = .centerY
+        footerRow.distribution = .fill
+        footerRow.translatesAutoresizingMaskIntoConstraints = false
+
+        let autoSaveLabel = NSTextField(labelWithString: "Changes are applied automatically.")
+        autoSaveLabel.font = .systemFont(ofSize: 11)
+        autoSaveLabel.textColor = .tertiaryLabelColor
+
+        let resetButton = NSButton(title: "Reset to Defaults", target: self, action: #selector(resetSettings))
+        resetButton.bezelStyle = .rounded
+        resetButton.font = .systemFont(ofSize: 11)
+
+        footerRow.addArrangedSubview(autoSaveLabel)
+        footerRow.addArrangedSubview(resetButton)
+
+        root.addArrangedSubview(footerRow)
+
+        // Constraints
+        NSLayoutConstraint.activate([
+            headerStack.widthAnchor.constraint(equalTo: root.widthAnchor),
+            formatCard.widthAnchor.constraint(equalTo: root.widthAnchor),
+            formatCardStack.widthAnchor.constraint(equalTo: formatCard.widthAnchor),
+            presetPopup.widthAnchor.constraint(equalTo: formatCardStack.widthAnchor, constant: -28),
+            formatField.widthAnchor.constraint(equalTo: formatCardStack.widthAnchor, constant: -28),
+            previewCallout.widthAnchor.constraint(equalTo: formatCardStack.widthAnchor, constant: -28),
+            previewStack.widthAnchor.constraint(equalTo: previewCallout.widthAnchor),
+            shortcutCard.widthAnchor.constraint(equalTo: root.widthAnchor),
+            shortcutCardStack.widthAnchor.constraint(equalTo: shortcutCard.widthAnchor),
+            shortcutRow.widthAnchor.constraint(equalTo: shortcutCardStack.widthAnchor, constant: -28),
+            hotKeyRecorder.widthAnchor.constraint(equalToConstant: 130),
+            hotKeyRecorder.heightAnchor.constraint(equalToConstant: 30),
+            permCard.widthAnchor.constraint(equalTo: root.widthAnchor),
+            permCardStack.widthAnchor.constraint(equalTo: permCard.widthAnchor),
+            footerRow.widthAnchor.constraint(equalTo: root.widthAnchor)
         ])
     }
 
     private func configurePresetPopup() {
         presetPopup.removeAllItems()
-
         for def in FormatDefinition.all {
             presetPopup.addItem(withTitle: def.label)
             presetPopup.lastItem?.representedObject = def.type.rawValue
         }
-
         presetPopup.menu?.addItem(.separator())
-        presetPopup.addItem(withTitle: "Custom Format")
+        presetPopup.addItem(withTitle: "Custom Format…")
         presetPopup.lastItem?.representedObject = FormatType.custom.rawValue
     }
 
@@ -875,7 +994,6 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
             }
         } catch {
             print("Failed to toggle launch at login: \(error)")
-            // Revert state on failure
             sender.state = sender.state == .on ? .off : .on
         }
     }
@@ -885,7 +1003,13 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         useUTCButton.state = SettingsStore.useUTCTime ? .on : .off
         formatField.stringValue = SettingsStore.customFormat
         hotKeyRecorder.hotKey = SettingsStore.hotKey
+        updateFormatFieldState()
         updateSample()
+    }
+
+    private func updateFormatFieldState() {
+        let isCustom = selectedPreset() == .custom
+        formatField.isEnabled = isCustom
     }
 
     private func updateSample() {
@@ -893,11 +1017,26 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
         let useUTC = useUTCButton.state == .on
 
         if type == .custom {
-            sampleLabel.stringValue = "Preview: \(TimestampFormatter().string(type: .custom, useUTC: useUTC, customFormat: cleanedFormat()))"
+            livePreviewText.stringValue = TimestampFormatter().string(type: .custom, useUTC: useUTC, customFormat: cleanedFormat())
             return
         }
 
-        sampleLabel.stringValue = "Preview: \(TimestampFormatter().string(type: type, useUTC: useUTC))"
+        livePreviewText.stringValue = TimestampFormatter().string(type: type, useUTC: useUTC)
+    }
+
+    private func updateAccessibilityStatus() {
+        let isTrusted = AccessibilityPermission.isTrusted(prompt: false)
+        accessibilityStatusDot.layer?.backgroundColor = isTrusted
+            ? NSColor.systemGreen.cgColor
+            : NSColor.systemOrange.cgColor
+        accessibilityStatusLabel.stringValue = isTrusted
+            ? "Accessibility Permission: Granted"
+            : "Accessibility Permission: Required"
+        accessibilityButton.title = isTrusted ? "System Settings…" : "Grant Access…"
+    }
+
+    @objc private func openSystemSettings() {
+        AccessibilityPermission.openSettings()
     }
 
     private func cleanedFormat() -> String {
@@ -910,7 +1049,6 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
               let type = FormatType(rawValue: rawValue) else {
             return .compactLocal
         }
-
         return type
     }
 
@@ -922,42 +1060,42 @@ private final class PreferencesWindowController: NSWindowController, NSTextField
 
     func controlTextDidChange(_ notification: Notification) {
         selectPreset(.custom)
+        SettingsStore.activeFormatType = .custom
+        SettingsStore.customFormat = cleanedFormat()
+        updateFormatFieldState()
         updateSample()
+        onChange()
     }
 
     @objc private func formatFieldChanged() {
+        SettingsStore.customFormat = cleanedFormat()
         updateSample()
+        onChange()
     }
 
     @objc private func presetChanged() {
+        let type = selectedPreset()
+        SettingsStore.activeFormatType = type
+        updateFormatFieldState()
         updateSample()
+        onChange()
     }
 
     @objc private func useUTCChanged() {
+        SettingsStore.useUTCTime = useUTCButton.state == .on
         updateSample()
+        onChange()
+    }
+
+    private func hotKeyChanged() {
+        SettingsStore.hotKey = hotKeyRecorder.hotKey
+        onChange()
     }
 
     @objc private func resetSettings() {
-        selectPreset(.compactLocal)
-        formatField.stringValue = defaultTimestampFormat
-        useUTCButton.state = .off
-        hotKeyRecorder.hotKey = .defaultValue
-        updateSample()
-    }
-
-    @objc private func cancel() {
-        close()
-    }
-
-    @objc private func saveSettings() {
-        let newCustom = cleanedFormat()
-
-        SettingsStore.customFormat = newCustom
-        SettingsStore.useUTCTime = useUTCButton.state == .on
-        SettingsStore.activeFormatType = selectedPreset()
-        SettingsStore.hotKey = hotKeyRecorder.hotKey
-        onSave()
-        close()
+        SettingsStore.reset()
+        loadSettings()
+        onChange()
     }
 }
 
@@ -1057,41 +1195,129 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
 
-        menu.addItem(createSectionHeader(title: "FORMAT"))
+        // 1. Top action item: Insert Timestamp now
+        let insertItem = NSMenuItem(
+            title: "Insert Timestamp",
+            action: #selector(insertTimestampNow),
+            keyEquivalent: ""
+        )
+        insertItem.target = self
+        insertItem.attributedTitle = createActionAttributedTitle(
+            action: "Insert Timestamp",
+            shortcut: SettingsStore.hotKey.glyphString
+        )
+        menu.addItem(insertItem)
+
+        menu.addItem(.separator())
+
+        // 2. Section: Quick Formats
+        let formatHeader = NSMenuItem(title: "QUICK FORMATS", action: nil, keyEquivalent: "")
+        formatHeader.isEnabled = false
+        menu.addItem(formatHeader)
+
+        let formatter = TimestampFormatter()
         for def in FormatDefinition.quickMenu {
-            menu.addItem(createFormatMenuItem(for: def))
+            let item = NSMenuItem(
+                title: def.label,
+                action: #selector(selectFormat(_:)),
+                keyEquivalent: ""
+            )
+            item.target = self
+            item.representedObject = def.type.rawValue
+            item.state = (SettingsStore.activeFormatType == def.type) ? .on : .off
+            let sample = formatter.string(type: def.type)
+            item.toolTip = sample
+            if #available(macOS 14.0, *) {
+                item.subtitle = sample
+            } else {
+                item.attributedTitle = createMenuItemAttributedTitle(title: def.label, sample: sample)
+            }
+            menu.addItem(item)
         }
 
-        let utcItem = NSMenuItem(title: "Use UTC time", action: #selector(toggleUseUTCTime), keyEquivalent: "")
+        // 3. Submenu: More Formats
+        let moreMenu = NSMenu()
+
+        // Standards & RFC
+        let stdHeader = NSMenuItem(title: "STANDARDS & RFC", action: nil, keyEquivalent: "")
+        stdHeader.isEnabled = false
+        moreMenu.addItem(stdHeader)
+        for def in FormatDefinition.interchange {
+            moreMenu.addItem(createSubmenuItem(def: def, formatter: formatter))
+        }
+
+        moreMenu.addItem(.separator())
+
+        // Human Readable
+        let humanHeader = NSMenuItem(title: "HUMAN READABLE", action: nil, keyEquivalent: "")
+        humanHeader.isEnabled = false
+        moreMenu.addItem(humanHeader)
+        for def in [FormatDefinition.european, FormatDefinition.europeanShort, FormatDefinition.germanLong, FormatDefinition.british, FormatDefinition.us, FormatDefinition.usShort, FormatDefinition.unixReadable] {
+            moreMenu.addItem(createSubmenuItem(def: def, formatter: formatter))
+        }
+
+        moreMenu.addItem(.separator())
+
+        // Unix Epoch
+        let unixHeader = NSMenuItem(title: "UNIX EPOCH", action: nil, keyEquivalent: "")
+        unixHeader.isEnabled = false
+        moreMenu.addItem(unixHeader)
+        for def in FormatDefinition.unix {
+            moreMenu.addItem(createSubmenuItem(def: def, formatter: formatter))
+        }
+
+        moreMenu.addItem(.separator())
+
+        // Custom Format
+        let customItem = NSMenuItem(
+            title: "Custom Format (\(SettingsStore.customFormat))",
+            action: #selector(selectCustomFormat),
+            keyEquivalent: ""
+        )
+        customItem.target = self
+        customItem.state = (SettingsStore.activeFormatType == .custom) ? .on : .off
+        customItem.toolTip = formatter.string(type: .custom)
+        moreMenu.addItem(customItem)
+
+        let moreItem = NSMenuItem(title: "More Formats", action: nil, keyEquivalent: "")
+        moreItem.submenu = moreMenu
+        menu.addItem(moreItem)
+
+        menu.addItem(.separator())
+
+        // 4. Use UTC time toggle
+        let utcItem = NSMenuItem(
+            title: "Use UTC time",
+            action: #selector(toggleUseUTCTime),
+            keyEquivalent: ""
+        )
         utcItem.target = self
         utcItem.state = SettingsStore.useUTCTime ? .on : .off
         menu.addItem(utcItem)
 
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(
-            title: "Hotkey: \(SettingsStore.hotKey.displayString)",
-            action: nil,
-            keyEquivalent: ""
-        ))
 
-        menu.addItem(.separator())
+        // 5. Accessibility warning (only if NOT granted)
+        if !AccessibilityPermission.isTrusted(prompt: false) {
+            let warnItem = NSMenuItem(
+                title: "⚠️ Grant Accessibility Permission…",
+                action: #selector(openAccessibilitySettings),
+                keyEquivalent: ""
+            )
+            warnItem.target = self
+            menu.addItem(warnItem)
+            menu.addItem(.separator())
+        }
+
+        // 6. Settings & standard items
         let settingsItem = NSMenuItem(
-            title: "Settings...",
+            title: "Settings…",
             action: #selector(openSettings),
             keyEquivalent: ","
         )
         settingsItem.target = self
         menu.addItem(settingsItem)
 
-        let accessibilityItem = NSMenuItem(
-            title: "Open Accessibility Settings",
-            action: #selector(openAccessibilitySettings),
-            keyEquivalent: ""
-        )
-        accessibilityItem.target = self
-        menu.addItem(accessibilityItem)
-
-        menu.addItem(.separator())
         let aboutItem = NSMenuItem(
             title: "About Timestamp Inserter",
             action: #selector(openAbout),
@@ -1109,97 +1335,75 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
         menu.addItem(quitItem)
     }
 
-    private func createFormatMenuItem(for def: FormatDefinition) -> NSMenuItem {
-        createTimestampMenuItem(
+    private func createActionAttributedTitle(action: String, shortcut: String) -> NSAttributedString {
+        let attr = NSMutableAttributedString()
+        attr.append(NSAttributedString(
+            string: action,
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 13, weight: .medium),
+                .foregroundColor: NSColor.labelColor
+            ]
+        ))
+        attr.append(NSAttributedString(
+            string: "    \(shortcut)",
+            attributes: [
+                .font: NSFont.monospacedSystemFont(ofSize: 12, weight: .regular),
+                .foregroundColor: NSColor.secondaryLabelColor
+            ]
+        ))
+        return attr
+    }
+
+    private func createMenuItemAttributedTitle(title: String, sample: String) -> NSAttributedString {
+        let attr = NSMutableAttributedString()
+        attr.append(NSAttributedString(
+            string: title,
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 13, weight: .regular),
+                .foregroundColor: NSColor.labelColor
+            ]
+        ))
+        attr.append(NSAttributedString(
+            string: "  —  \(sample)",
+            attributes: [
+                .font: NSFont.monospacedSystemFont(ofSize: 11, weight: .regular),
+                .foregroundColor: NSColor.secondaryLabelColor
+            ]
+        ))
+        return attr
+    }
+
+    private func createSubmenuItem(def: FormatDefinition, formatter: TimestampFormatter) -> NSMenuItem {
+        let item = NSMenuItem(
             title: def.label,
-            badgeText: def.badgeText,
-            badgeColor: def.badgeColor,
-            sampleText: TimestampFormatter().string(type: def.type),
-            isSelected: SettingsStore.activeFormatType == def.type,
             action: #selector(selectFormat(_:)),
-            representedObject: def.type.rawValue
+            keyEquivalent: ""
         )
-    }
-
-    private func createTimestampMenuItem(
-        title: String,
-        badgeText: String,
-        badgeColor: NSColor,
-        sampleText: String,
-        isSelected: Bool,
-        action: Selector,
-        representedObject: Any? = nil
-    ) -> NSMenuItem {
-        let container = InteractiveMenuItemView(frame: NSRect(x: 0, y: 0, width: MenuRowLayout.width, height: MenuRowLayout.height))
-
-        if isSelected {
-            let checkmark = NSTextField(labelWithString: "✓")
-            checkmark.font = .systemFont(ofSize: 14)
-            checkmark.textColor = .labelColor
-            checkmark.sizeToFit()
-            checkmark.frame.origin = NSPoint(x: 6, y: (container.frame.height - checkmark.frame.height) / 2)
-            container.addSubview(checkmark)
-        }
-
-        let badgeView = NSImageView(image: createBadgeImage(text: badgeText, color: badgeColor))
-        badgeView.frame = NSRect(x: MenuRowLayout.badgeX, y: (container.frame.height - 16) / 2, width: MenuRowLayout.badgeWidth, height: 16)
-
-        container.addSubview(badgeView)
-
-        let titleLabel = createMenuLabel(
-            text: title,
-            font: .systemFont(ofSize: 14),
-            color: .labelColor,
-            alignment: .left,
-            lineBreakMode: .byTruncatingTail,
-            frame: NSRect(x: MenuRowLayout.titleX, y: 0, width: MenuRowLayout.titleWidth, height: container.frame.height)
-        )
-
-        let sampleLabel = createMenuLabel(
-            text: sampleText,
-            font: .monospacedDigitSystemFont(ofSize: 11, weight: .regular),
-            color: .secondaryLabelColor,
-            alignment: .right,
-            lineBreakMode: .byTruncatingMiddle,
-            frame: NSRect(x: MenuRowLayout.sampleX, y: 0, width: MenuRowLayout.sampleWidth, height: container.frame.height)
-        )
-        sampleLabel.toolTip = sampleText
-
-        container.addSubview(titleLabel)
-        container.addSubview(sampleLabel)
-
-        let item = NSMenuItem()
-        item.view = container
-        item.representedObject = representedObject
-        item.action = action
         item.target = self
+        item.representedObject = def.type.rawValue
+        item.state = (SettingsStore.activeFormatType == def.type) ? .on : .off
+        let sample = formatter.string(type: def.type)
+        item.toolTip = sample
+        if #available(macOS 14.0, *) {
+            item.subtitle = sample
+        } else {
+            item.attributedTitle = createMenuItemAttributedTitle(title: def.label, sample: sample)
+        }
         return item
-    }
-
-    private func createMenuLabel(
-        text: String,
-        font: NSFont,
-        color: NSColor,
-        alignment: NSTextAlignment,
-        lineBreakMode: NSLineBreakMode,
-        frame: NSRect
-    ) -> NSTextField {
-        let label = NSTextField(labelWithString: text)
-        label.font = font
-        label.textColor = color
-        label.alignment = alignment
-        label.lineBreakMode = lineBreakMode
-        label.maximumNumberOfLines = 1
-        label.usesSingleLineMode = true
-        label.sizeToFit()
-        label.frame = NSRect(x: frame.origin.x, y: (frame.height - label.frame.height) / 2, width: frame.width, height: label.frame.height)
-        return label
     }
 
     @objc private func selectFormat(_ sender: NSMenuItem) {
         if let rawValue = sender.representedObject as? String, let type = FormatType(rawValue: rawValue) {
             SettingsStore.activeFormatType = type
         }
+    }
+
+    @objc private func selectCustomFormat() {
+        SettingsStore.activeFormatType = .custom
+    }
+
+    @objc private func insertTimestampNow() {
+        inserter.insertTimestamp()
     }
 
     @objc private func toggleUseUTCTime(_ sender: NSMenuItem) {
