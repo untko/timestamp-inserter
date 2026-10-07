@@ -824,40 +824,63 @@ private final class AppIconSquircleView: NSView {
         squirclePath.lineWidth = 1
         squirclePath.stroke()
 
-        let iconRect = bounds.insetBy(dx: 10, dy: 10)
         let tintColor: NSColor = isDark ? .white : NSColor(white: 0.15, alpha: 1.0)
+        let iconBounds = bounds.insetBy(dx: 8, dy: 8)
 
-        if let icon = Bundle.main.image(forResource: "MenuBarIcon") ?? NSImage(named: "MenuBarIcon"),
-           let cgImage = icon.cgImage(forProposedRect: nil, context: nil, hints: nil),
-           let ctx = NSGraphicsContext.current?.cgContext {
-            ctx.saveGState()
-            ctx.clip(to: iconRect, mask: cgImage)
-            tintColor.setFill()
-            ctx.fill(iconRect)
-            ctx.restoreGState()
-        } else {
-            let circlePath = NSBezierPath(ovalIn: iconRect)
-            tintColor.setStroke()
-            circlePath.lineWidth = 2.2
-            circlePath.stroke()
+        guard let ctx = NSGraphicsContext.current?.cgContext else { return }
+        ctx.saveGState()
 
-            let center = NSPoint(x: iconRect.midX, y: iconRect.midY)
-            let hand1 = NSBezierPath()
-            hand1.move(to: center)
-            hand1.line(to: NSPoint(x: center.x, y: center.y + iconRect.height * 0.35))
-            tintColor.setStroke()
-            hand1.lineWidth = 2.2
-            hand1.lineCapStyle = .round
-            hand1.stroke()
+        // Flip to top-left coordinate system matching SVG (512x512)
+        ctx.translateBy(x: iconBounds.origin.x, y: iconBounds.origin.y + iconBounds.height)
+        ctx.scaleBy(x: iconBounds.width / 512.0, y: -iconBounds.height / 512.0)
 
-            let hand2 = NSBezierPath()
-            hand2.move(to: center)
-            hand2.line(to: NSPoint(x: center.x + iconRect.width * 0.28, y: center.y))
-            tintColor.setStroke()
-            hand2.lineWidth = 2.2
-            hand2.lineCapStyle = .round
-            hand2.stroke()
-        }
+        tintColor.setFill()
+        tintColor.setStroke()
+
+        // 1. Clock dial ring: outer circle (r=110), inner cutout (r=86)
+        let dialPath = CGMutablePath()
+        dialPath.addEllipse(in: CGRect(x: 256 - 110, y: 130 - 110, width: 220, height: 220))
+        dialPath.addEllipse(in: CGRect(x: 256 - 86, y: 130 - 86, width: 172, height: 172))
+        ctx.addPath(dialPath)
+        ctx.fillPath(using: .evenOdd)
+
+        // 2. Sculpted Stand
+        let stand = CGMutablePath()
+        stand.move(to: CGPoint(x: 203, y: 204))
+        stand.addCurve(to: CGPoint(x: 151, y: 299), control1: CGPoint(x: 203, y: 243), control2: CGPoint(x: 187, y: 275))
+        stand.addCurve(to: CGPoint(x: 98, y: 316), control1: CGPoint(x: 135, y: 309), control2: CGPoint(x: 117, y: 316))
+        stand.addLine(to: CGPoint(x: 72, y: 316))
+        stand.addCurve(to: CGPoint(x: 24, y: 365), control1: CGPoint(x: 45, y: 316), control2: CGPoint(x: 24, y: 338))
+        stand.addLine(to: CGPoint(x: 24, y: 370))
+        stand.addCurve(to: CGPoint(x: 38, y: 382), control1: CGPoint(x: 24, y: 377), control2: CGPoint(x: 31, y: 382))
+        stand.addLine(to: CGPoint(x: 474, y: 382))
+        stand.addCurve(to: CGPoint(x: 488, y: 370), control1: CGPoint(x: 481, y: 382), control2: CGPoint(x: 488, y: 377))
+        stand.addLine(to: CGPoint(x: 488, y: 365))
+        stand.addCurve(to: CGPoint(x: 440, y: 316), control1: CGPoint(x: 488, y: 338), control2: CGPoint(x: 467, y: 316))
+        stand.addLine(to: CGPoint(x: 414, y: 316))
+        stand.addCurve(to: CGPoint(x: 361, y: 299), control1: CGPoint(x: 395, y: 316), control2: CGPoint(x: 377, y: 309))
+        stand.addCurve(to: CGPoint(x: 309, y: 204), control1: CGPoint(x: 325, y: 275), control2: CGPoint(x: 309, y: 243))
+        stand.closeSubpath()
+        ctx.addPath(stand)
+        ctx.fillPath()
+
+        // 3. Lower separated bar
+        let bar = CGPath(roundedRect: CGRect(x: 60, y: 405, width: 392, height: 62), cornerWidth: 14, cornerHeight: 14, transform: nil)
+        ctx.addPath(bar)
+        ctx.fillPath()
+
+        // 4. Clock hands (12 o'clock to 9 o'clock)
+        ctx.setLineWidth(20)
+        ctx.setLineCap(.round)
+        ctx.setLineJoin(.round)
+        let hands = CGMutablePath()
+        hands.move(to: CGPoint(x: 256, y: 77))
+        hands.addLine(to: CGPoint(x: 256, y: 130))
+        hands.addLine(to: CGPoint(x: 203, y: 130))
+        ctx.addPath(hands)
+        ctx.strokePath()
+
+        ctx.restoreGState()
     }
 }
 
