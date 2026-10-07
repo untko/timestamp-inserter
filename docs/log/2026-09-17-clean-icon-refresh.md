@@ -12,7 +12,7 @@ The original icon read as a clock but did not carry the compact, grounded silhou
 
 ## What changed
 
-- Added the editable source at `design/timestamp-inserter-logo-clean.svg`.
+- Added the editable source at `assets/timestamp-inserter-logo-clean.svg`.
 - Replaced `TimestampInserter/AppIcon.icns` with the monochrome mark.
 - Rendered the icon with a transparent background and standard 1024px macOS icon geometry.
 

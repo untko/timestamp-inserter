@@ -1,7 +1,7 @@
 # Timestamp Inserter
 
 <p align="center">
-  <img src="design/timestamp-inserter-logo-clean.svg" width="128" height="128" alt="Timestamp Inserter logo">
+  <img src="assets/timestamp-inserter-logo-clean.svg" width="128" height="128" alt="Timestamp Inserter logo">
 </p>
 
 <p align="center">
@@ -173,7 +173,7 @@ Package as release zip:
 │   ├── MenuBarIcon@2x.png                    # Menu bar status item icon (36x36 @2x)
 │   ├── Info.plist                            # Bundle identifiers, version, LSUIElement
 │   └── build.sh                              # App compilation and code signing script
-├── design/
+├── assets/
 │   ├── timestamp-inserter-logo-clean.svg     # Clean vector source for app mark
 │   ├── timestamp-inserter-clock-roller-sketches.svg
 │   └── timestamp-inserter-icon-sketches.svg
