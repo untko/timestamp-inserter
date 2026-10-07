@@ -3,6 +3,12 @@
   <desc id="desc">A clean monochrome logo with a round clock dial, rounded L-shaped clock hand, sculpted stand, and separated lower bar.</desc>
 
   <defs>
+    <style>
+      :root { color: #111111; }
+      @media (prefers-color-scheme: dark) {
+        :root { color: #f0f0f0; }
+      }
+    </style>
     <!-- The mask keeps the dial opening transparent instead of painting it white. -->
     <mask id="dial-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
       <rect width="512" height="512" fill="#000000"/>
@@ -13,8 +19,8 @@
     </mask>
   </defs>
 
-  <!-- Change this color to create a colorway; the default is near-black. -->
-  <g color="#111111">
+  <!-- Adapts to system light/dark mode via currentColor -->
+  <g color="currentColor">
     <rect width="512" height="512" fill="currentColor" mask="url(#dial-cutout)"/>
 
     <!-- Rounded clock hand: twelve o'clock to nine o'clock. -->

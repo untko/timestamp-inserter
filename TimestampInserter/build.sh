@@ -26,6 +26,8 @@ swiftc \
 
 cp "$ROOT_DIR/Info.plist" "$CONTENTS_DIR/Info.plist"
 cp "$ROOT_DIR/AppIcon.icns" "$RESOURCES_DIR/AppIcon.icns"
+cp "$ROOT_DIR/MenuBarIcon.png" "$RESOURCES_DIR/MenuBarIcon.png"
+cp "$ROOT_DIR/MenuBarIcon@2x.png" "$RESOURCES_DIR/MenuBarIcon@2x.png"
 chmod +x "$MACOS_DIR/$EXECUTABLE_NAME"
 
 codesign --force --deep --sign - "$APP_DIR" >/dev/null

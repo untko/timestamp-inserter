@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1000" viewBox="0 0 1536 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Timestamp Inserter clock and roller icon sketches</title>
+  <desc id="desc">Four black-and-white icon sketches combining a clock or T-shaped upper mark with a horizontal insertion roller and base.</desc>
+
+  <defs>
+    <style>
+      .ink { fill: #171717; }
+      .line { fill: none; stroke: #171717; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke: #171717; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      .muted { fill: #777774; }
+      .label { font: 600 16px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; letter-spacing: 0.02em; }
+      .caption { font: 400 13px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; }
+      .tiny { font: 600 10px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; letter-spacing: 0.14em; }
+    </style>
+
+    <!-- A: closest to the black-and-white mechanical reference. -->
+    <symbol id="clock-roller" viewBox="0 0 360 250">
+      <circle cx="180" cy="68" r="57" class="line"/>
+      <circle cx="180" cy="68" r="45" class="line"/>
+      <path d="M180 36v32h-29" class="line"/>
+      <path d="M140 123v20h80v-20" class="line"/>
+      <path d="M47 153h266v31H47z" class="line"/>
+      <circle cx="62" cy="168" r="24" class="line"/>
+      <circle cx="298" cy="168" r="24" class="line"/>
+      <path d="M62 168h236" class="thin"/>
+      <path d="M47 199h266l-16 27H63z" class="line"/>
+    </symbol>
+
+    <!-- B: borrows the rounded blue silhouette while keeping the clock hand. -->
+    <symbol id="bulb-roller" viewBox="0 0 360 250">
+      <path d="M180 17c-37 0-61 25-61 57 0 25 14 42 29 59 8 9 12 16 12 26h40c0-10 4-17 12-26 15-17 29-34 29-59 0-32-24-57-61-57z" class="line"/>
+      <path d="M180 39v29h-29" class="line"/>
+      <path d="M150 126v19h60v-19" class="line"/>
+      <path d="M47 153h266v31H47z" class="line"/>
+      <circle cx="62" cy="168" r="24" class="line"/>
+      <circle cx="298" cy="168" r="24" class="line"/>
+      <path d="M62 168h236" class="thin"/>
+      <path d="M47 199h266l-16 27H63z" class="line"/>
+    </symbol>
+
+    <!-- C: the plus is explicit; reads as add/insert at a glance. -->
+    <symbol id="plus-roller" viewBox="0 0 360 250">
+      <circle cx="180" cy="68" r="57" class="line"/>
+      <circle cx="180" cy="68" r="45" class="line"/>
+      <path d="M180 42v52M154 68h52" class="line"/>
+      <path d="M140 123v20h80v-20" class="line"/>
+      <path d="M47 153h266v31H47z" class="line"/>
+      <circle cx="62" cy="168" r="24" class="line"/>
+      <circle cx="298" cy="168" r="24" class="line"/>
+      <path d="M62 168h236" class="thin"/>
+      <path d="M47 199h266l-16 27H63z" class="line"/>
+    </symbol>
+
+    <!-- D: smallest number of parts; strongest candidate for a tiny icon. -->
+    <symbol id="t-roller" viewBox="0 0 360 250">
+      <circle cx="180" cy="68" r="54" class="line"/>
+      <path d="M147 43h66M180 43v49" class="line"/>
+      <path d="M147 123v20h66v-20" class="line"/>
+      <path d="M48 153h264l-18 31H66z" class="line"/>
+      <circle cx="62" cy="168" r="23" class="line"/>
+      <circle cx="298" cy="168" r="23" class="line"/>
+      <path d="M62 168h236" class="thin"/>
+      <path d="M75 201h210v24H75z" class="line"/>
+    </symbol>
+  </defs>
+
+  <rect width="1536" height="1000" fill="#fbfbf8"/>
+
+  <g transform="translate(72 58)">
+    <text class="tiny muted" x="0" y="0">TIMESTAMP INSERTER / BLACK + WHITE DIRECTION</text>
+    <text class="ink" x="0" y="58" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="42" font-weight="700" letter-spacing="-0.03em">Clock, insert, repeat.</text>
+    <text class="caption muted" x="0" y="90">A tighter interpretation of the supplied references: clock or T above a compact roller-like insertion bar.</text>
+    <line x1="0" y1="126" x2="1392" y2="126" stroke="#deded9"/>
+  </g>
+
+  <!-- A -->
+  <g transform="translate(72 210)">
+    <rect width="672" height="310" rx="24" fill="#ffffff" stroke="#e2e2de"/>
+    <rect x="25" y="25" width="310" height="260" rx="20" fill="#f2f2ee"/>
+    <use href="#clock-roller" x="39" y="30" width="282" height="250"/>
+    <text class="tiny muted" x="370" y="53">A / CLOCK ROLLER</text>
+    <text class="label ink" x="370" y="84">Mechanical clock</text>
+    <text class="caption muted" x="370" y="116">Closest to the supplied</text>
+    <text class="caption muted" x="370" y="136">black-and-white reference.</text>
+    <text class="caption muted" x="370" y="182">Double ring + L-shaped</text>
+    <text class="caption muted" x="370" y="202">clock hand + rail.</text>
+  </g>
+
+  <!-- B -->
+  <g transform="translate(792 210)">
+    <rect width="672" height="310" rx="24" fill="#ffffff" stroke="#e2e2de"/>
+    <rect x="25" y="25" width="310" height="260" rx="20" fill="#f2f2ee"/>
+    <use href="#bulb-roller" x="39" y="30" width="282" height="250"/>
+    <text class="tiny muted" x="370" y="53">B / ROUNDED DIAL</text>
+    <text class="label ink" x="370" y="84">Bulb-clock</text>
+    <text class="caption muted" x="370" y="116">Uses the blue reference’s</text>
+    <text class="caption muted" x="370" y="136">rounded outer silhouette.</text>
+    <text class="caption muted" x="370" y="182">Softer, friendlier, and</text>
+    <text class="caption muted" x="370" y="202">more app-like.</text>
+  </g>
+
+  <!-- C -->
+  <g transform="translate(72 570)">
+    <rect width="672" height="310" rx="24" fill="#ffffff" stroke="#e2e2de"/>
+    <rect x="25" y="25" width="310" height="260" rx="20" fill="#f2f2ee"/>
+    <use href="#plus-roller" x="39" y="30" width="282" height="250"/>
+    <text class="tiny muted" x="370" y="53">C / PLUS DIAL</text>
+    <text class="label ink" x="370" y="84">Add timestamp</text>
+    <text class="caption muted" x="370" y="116">Makes the insert action</text>
+    <text class="caption muted" x="370" y="136">immediately explicit.</text>
+    <text class="caption muted" x="370" y="182">Best if the app should feel</text>
+    <text class="caption muted" x="370" y="202">like a tiny utility button.</text>
+  </g>
+
+  <!-- D -->
+  <g transform="translate(792 570)">
+    <rect width="672" height="310" rx="24" fill="#ffffff" stroke="#e2e2de"/>
+    <rect x="25" y="25" width="310" height="260" rx="20" fill="#f2f2ee"/>
+    <use href="#t-roller" x="39" y="30" width="282" height="250"/>
+    <text class="tiny muted" x="370" y="53">D / T DIAL</text>
+    <text class="label ink" x="370" y="84">T + rail</text>
+    <text class="caption muted" x="370" y="116">The minimal bridge between</text>
+    <text class="caption muted" x="370" y="136">the two references.</text>
+    <text class="caption muted" x="370" y="182">Most likely to survive</text>
+    <text class="caption muted" x="370" y="202">menu-bar scale.</text>
+  </g>
+
+  <g transform="translate(72 943)">
+    <text class="caption muted" x="0" y="0">Recommended next pass: simplify A or B into a 16 px menu-bar silhouette, then test monochrome and one accent color.</text>
+    <text class="tiny muted" x="1392" y="0" text-anchor="end">SVG / EXPLORATION 02</text>
+  </g>
+</svg>

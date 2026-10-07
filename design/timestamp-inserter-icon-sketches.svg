@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1536" height="1100" viewBox="0 0 1536 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Timestamp Inserter icon sketches</title>
+  <desc id="desc">Six clean, geometric T plus icon directions shown in monochrome, inverse, and accent-color treatments.</desc>
+
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#111111" flood-opacity="0.08"/>
+    </filter>
+    <style>
+      .ink { fill: #171717; }
+      .paper { fill: #fbfbf8; }
+      .muted { fill: #777774; }
+      .label { font: 600 15px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; letter-spacing: 0.02em; }
+      .caption { font: 400 13px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; }
+      .tiny { font: 600 10px -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; letter-spacing: 0.12em; }
+    </style>
+
+    <!-- 01: the most literal T plus; strong at 16 px. -->
+    <symbol id="icon-01" viewBox="0 0 160 160">
+      <g fill="currentColor">
+        <rect x="26" y="30" width="108" height="24" rx="12"/>
+        <rect x="68" y="46" width="24" height="82" rx="12"/>
+      </g>
+      <g fill="none" stroke="#6D5EFC" stroke-width="10" stroke-linecap="round">
+        <path d="M113 96v36M95 114h36"/>
+      </g>
+    </symbol>
+
+    <!-- 02: T with a cursor/insert point; communicates text insertion. -->
+    <symbol id="icon-02" viewBox="0 0 160 160">
+      <g fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round">
+        <path d="M30 38h72M66 38v90"/>
+      </g>
+      <path d="M116 94v38M97 113h38" fill="none" stroke="#F08A3C" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="116" cy="113" r="5" fill="#F08A3C"/>
+    </symbol>
+
+    <!-- 03: a clock frame around a T plus; strongest timestamp association. -->
+    <symbol id="icon-03" viewBox="0 0 160 160">
+      <circle cx="80" cy="80" r="54" fill="none" stroke="currentColor" stroke-width="12"/>
+      <g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round">
+        <path d="M52 59h56M80 59v45"/>
+      </g>
+      <path d="M113 106v30M98 121h30" fill="none" stroke="#3C9B73" stroke-width="8" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- 04: bracketed T plus; feels like an insertion command or utility. -->
+    <symbol id="icon-04" viewBox="0 0 160 160">
+      <path d="M42 28H27v104h15M118 28h15v104h-15" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="currentColor">
+        <rect x="53" y="43" width="54" height="17" rx="8.5"/>
+        <rect x="71.5" y="54" width="17" height="57" rx="8.5"/>
+      </g>
+      <path d="M112 113v25M99.5 125.5h25" fill="none" stroke="#D9536F" stroke-width="7" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- 05: one-line monogram; lightest and most brandable. -->
+    <symbol id="icon-05" viewBox="0 0 160 160">
+      <path d="M30 43h76M68 43v76" fill="none" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M106 102v38M87 121h38" fill="none" stroke="#2E83B7" stroke-width="10" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- 06: negative-space version; works as a dark menu-bar badge. -->
+    <symbol id="icon-06" viewBox="0 0 160 160">
+      <rect x="18" y="18" width="124" height="124" rx="31" fill="currentColor"/>
+      <g fill="#FBFBF8">
+        <rect x="42" y="43" width="76" height="17" rx="8.5"/>
+        <rect x="71.5" y="54" width="17" height="66" rx="8.5"/>
+      </g>
+      <path d="M111 101v31M95.5 116.5h31" fill="none" stroke="#FBFBF8" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="111" cy="116" r="4" fill="#FBFBF8"/>
+    </symbol>
+
+    <symbol id="icon-06-inverse" viewBox="0 0 160 160">
+      <rect x="18" y="18" width="124" height="124" rx="31" fill="#FBFBF8"/>
+      <g fill="#171717">
+        <rect x="42" y="43" width="76" height="17" rx="8.5"/>
+        <rect x="71.5" y="54" width="17" height="66" rx="8.5"/>
+      </g>
+      <path d="M111 101v31M95.5 116.5h31" fill="none" stroke="#171717" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="111" cy="116" r="4" fill="#171717"/>
+    </symbol>
+  </defs>
+
+  <rect width="1536" height="1100" class="paper"/>
+
+  <g transform="translate(64 54)">
+    <text class="tiny muted" x="0" y="0">TIMESTAMP INSERTER / ICON EXPLORATION</text>
+    <text class="ink" x="0" y="58" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" font-size="42" font-weight="700" letter-spacing="-0.03em">A small mark for a useful shortcut.</text>
+    <text class="caption muted" x="0" y="90">Six T + directions — drawn as editable SVG, with restrained color accents that can be removed for a monochrome build.</text>
+    <line x1="0" y1="126" x2="1408" y2="126" stroke="#deded9"/>
+  </g>
+
+  <!-- Card 01 -->
+  <g transform="translate(64 220)">
+    <rect width="432" height="354" rx="24" fill="#ffffff" stroke="#e2e2de" filter="url(#shadow)"/>
+    <rect x="28" y="28" width="164" height="164" rx="34" fill="#f2f2ee"/>
+    <use xlink:href="#icon-01" x="30" y="30" width="160" height="160"/>
+    <text class="tiny muted" x="224" y="49">01 / MONOGRAM</text>
+    <text class="label ink" x="224" y="79">T plus</text>
+    <text class="caption muted" x="224" y="106">The clearest read of</text>
+    <text class="caption muted" x="224" y="125">the requested idea.</text>
+    <line x1="28" y1="218" x2="404" y2="218" stroke="#e8e8e4"/>
+    <text class="tiny muted" x="28" y="248">TREATMENTS</text>
+    <g transform="translate(28 264)">
+      <rect width="48" height="48" rx="12" fill="#f2f2ee"/><use xlink:href="#icon-01" width="48" height="48"/>
+      <rect x="60" width="48" height="48" rx="12" fill="#171717"/><use xlink:href="#icon-01" x="60" width="48" height="48" color="#fbfbf8"/>
+      <rect x="120" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="144" cy="24" r="10" fill="#6D5EFC"/>
+      <rect x="180" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="204" cy="24" r="10" fill="#3C9B73"/>
+      <rect x="240" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="264" cy="24" r="10" fill="#F08A3C"/>
+    </g>
+  </g>
+
+  <!-- Card 02 -->
+  <g transform="translate(552 220)">
+    <rect width="432" height="354" rx="24" fill="#ffffff" stroke="#e2e2de" filter="url(#shadow)"/>
+    <rect x="28" y="28" width="164" height="164" rx="34" fill="#f2f2ee"/>
+    <use xlink:href="#icon-02" x="30" y="30" width="160" height="160"/>
+    <text class="tiny muted" x="224" y="49">02 / INSERTION</text>
+    <text class="label ink" x="224" y="79">Cursor T</text>
+    <text class="caption muted" x="224" y="106">The plus becomes a</text>
+    <text class="caption muted" x="224" y="125">visible insertion point.</text>
+    <line x1="28" y1="218" x2="404" y2="218" stroke="#e8e8e4"/>
+    <text class="tiny muted" x="28" y="248">TREATMENTS</text>
+    <g transform="translate(28 264)">
+      <rect width="48" height="48" rx="12" fill="#f2f2ee"/><use xlink:href="#icon-02" width="48" height="48"/>
+      <rect x="60" width="48" height="48" rx="12" fill="#171717"/><use xlink:href="#icon-02" x="60" width="48" height="48"/>
+      <rect x="120" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="144" cy="24" r="10" fill="#F08A3C"/>
+      <rect x="180" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="204" cy="24" r="10" fill="#6D5EFC"/>
+      <rect x="240" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="264" cy="24" r="10" fill="#3C9B73"/>
+    </g>
+  </g>
+
+  <!-- Card 03 -->
+  <g transform="translate(1040 220)">
+    <rect width="432" height="354" rx="24" fill="#ffffff" stroke="#e2e2de" filter="url(#shadow)"/>
+    <rect x="28" y="28" width="164" height="164" rx="34" fill="#f2f2ee"/>
+    <use xlink:href="#icon-03" x="30" y="30" width="160" height="160"/>
+    <text class="tiny muted" x="224" y="49">03 / TIME</text>
+    <text class="label ink" x="224" y="79">Clock T</text>
+    <text class="caption muted" x="224" y="106">The strongest timestamp</text>
+    <text class="caption muted" x="224" y="125">association at a glance.</text>
+    <line x1="28" y1="218" x2="404" y2="218" stroke="#e8e8e4"/>
+    <text class="tiny muted" x="28" y="248">TREATMENTS</text>
+    <g transform="translate(28 264)">
+      <rect width="48" height="48" rx="12" fill="#f2f2ee"/><use xlink:href="#icon-03" width="48" height="48"/>
+      <rect x="60" width="48" height="48" rx="12" fill="#171717"/><use xlink:href="#icon-03" x="60" width="48" height="48"/>
+      <rect x="120" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="144" cy="24" r="10" fill="#3C9B73"/>
+      <rect x="180" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="204" cy="24" r="10" fill="#2E83B7"/>
+      <rect x="240" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="264" cy="24" r="10" fill="#6D5EFC"/>
+    </g>
+  </g>
+
+  <!-- Card 04 -->
+  <g transform="translate(64 614)">
+    <rect width="432" height="354" rx="24" fill="#ffffff" stroke="#e2e2de" filter="url(#shadow)"/>
+    <rect x="28" y="28" width="164" height="164" rx="34" fill="#f2f2ee"/>
+    <use xlink:href="#icon-04" x="30" y="30" width="160" height="160"/>
+    <text class="tiny muted" x="224" y="49">04 / UTILITY</text>
+    <text class="label ink" x="224" y="79">Bracket T</text>
+    <text class="caption muted" x="224" y="106">More technical and tool-like,</text>
+    <text class="caption muted" x="224" y="125">with a strong silhouette.</text>
+    <line x1="28" y1="218" x2="404" y2="218" stroke="#e8e8e4"/>
+    <text class="tiny muted" x="28" y="248">TREATMENTS</text>
+    <g transform="translate(28 264)">
+      <rect width="48" height="48" rx="12" fill="#f2f2ee"/><use xlink:href="#icon-04" width="48" height="48"/>
+      <rect x="60" width="48" height="48" rx="12" fill="#171717"/><use xlink:href="#icon-04" x="60" width="48" height="48"/>
+      <rect x="120" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="144" cy="24" r="10" fill="#D9536F"/>
+      <rect x="180" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="204" cy="24" r="10" fill="#6D5EFC"/>
+      <rect x="240" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="264" cy="24" r="10" fill="#F08A3C"/>
+    </g>
+  </g>
+
+  <!-- Card 05 -->
+  <g transform="translate(552 614)">
+    <rect width="432" height="354" rx="24" fill="#ffffff" stroke="#e2e2de" filter="url(#shadow)"/>
+    <rect x="28" y="28" width="164" height="164" rx="34" fill="#f2f2ee"/>
+    <use xlink:href="#icon-05" x="30" y="30" width="160" height="160"/>
+    <text class="tiny muted" x="224" y="49">05 / MONOLINE</text>
+    <text class="label ink" x="224" y="79">Quick T</text>
+    <text class="caption muted" x="224" y="106">Lightest visual weight;</text>
+    <text class="caption muted" x="224" y="125">best for a compact mark.</text>
+    <line x1="28" y1="218" x2="404" y2="218" stroke="#e8e8e4"/>
+    <text class="tiny muted" x="28" y="248">TREATMENTS</text>
+    <g transform="translate(28 264)">
+      <rect width="48" height="48" rx="12" fill="#f2f2ee"/><use xlink:href="#icon-05" width="48" height="48"/>
+      <rect x="60" width="48" height="48" rx="12" fill="#171717"/><use xlink:href="#icon-05" x="60" width="48" height="48"/>
+      <rect x="120" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="144" cy="24" r="10" fill="#2E83B7"/>
+      <rect x="180" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="204" cy="24" r="10" fill="#3C9B73"/>
+      <rect x="240" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="264" cy="24" r="10" fill="#D9536F"/>
+    </g>
+  </g>
+
+  <!-- Card 06 -->
+  <g transform="translate(1040 614)">
+    <rect width="432" height="354" rx="24" fill="#ffffff" stroke="#e2e2de" filter="url(#shadow)"/>
+    <rect x="28" y="28" width="164" height="164" rx="34" fill="#f2f2ee"/>
+    <use xlink:href="#icon-06" x="30" y="30" width="160" height="160"/>
+    <text class="tiny muted" x="224" y="49">06 / INVERSE</text>
+    <text class="label ink" x="224" y="79">Badge T</text>
+    <text class="caption muted" x="224" y="106">Most distinctive in a dark</text>
+    <text class="caption muted" x="224" y="125">menu-bar or Dock context.</text>
+    <line x1="28" y1="218" x2="404" y2="218" stroke="#e8e8e4"/>
+    <text class="tiny muted" x="28" y="248">TREATMENTS</text>
+    <g transform="translate(28 264)">
+      <rect width="48" height="48" rx="12" fill="#f2f2ee"/><use xlink:href="#icon-06" width="48" height="48"/>
+      <rect x="60" width="48" height="48" rx="12" fill="#171717"/><use xlink:href="#icon-06-inverse" x="60" width="48" height="48"/>
+      <rect x="120" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="144" cy="24" r="10" fill="#171717"/>
+      <rect x="180" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="204" cy="24" r="10" fill="#6D5EFC"/>
+      <rect x="240" width="48" height="48" rx="12" fill="#f2f2ee"/><circle cx="264" cy="24" r="10" fill="#2E83B7"/>
+    </g>
+  </g>
+
+  <g transform="translate(64 1023)">
+    <text class="caption muted" x="0" y="0">Suggested starting points: 01 for the most literal brief, 03 for instant timestamp recognition, 05 for the quietest menu-bar mark.</text>
+    <text class="tiny muted" x="1408" y="0" text-anchor="end">SVG / EXPLORATION 01</text>
+  </g>
+</svg>

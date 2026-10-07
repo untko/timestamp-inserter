@@ -1010,9 +1010,42 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
         return true
     }
 
+    private func createMenuBarIcon() -> NSImage {
+        let size = NSSize(width: 18, height: 18)
+        if let image = Bundle.main.image(forResource: "MenuBarIcon") ?? NSImage(named: "MenuBarIcon") {
+            image.size = size
+            image.isTemplate = true
+            return image
+        }
+        if let url1 = Bundle.main.url(forResource: "MenuBarIcon", withExtension: "png"),
+           let rep1 = NSImageRep(contentsOf: url1) {
+            let img = NSImage(size: size)
+            img.addRepresentation(rep1)
+            if let url2 = Bundle.main.url(forResource: "MenuBarIcon@2x", withExtension: "png"),
+               let rep2 = NSImageRep(contentsOf: url2) {
+                img.addRepresentation(rep2)
+            }
+            img.isTemplate = true
+            return img
+        }
+        if let appIcon = NSImage(named: "AppIcon") {
+            let image = NSImage(size: size)
+            image.lockFocus()
+            appIcon.draw(in: NSRect(origin: .zero, size: size))
+            image.unlockFocus()
+            image.isTemplate = true
+            return image
+        }
+        let fallback = NSImage(systemSymbolName: "clock", accessibilityDescription: "Timestamp Inserter") ?? NSImage()
+        fallback.isTemplate = true
+        return fallback
+    }
+
     private func installMenuBarItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        item.button?.image = NSImage(systemSymbolName: "calendar.badge.clock", accessibilityDescription: "Timestamp Inserter")
+        let icon = createMenuBarIcon()
+        item.button?.image = icon
+        item.button?.imagePosition = .imageOnly
         item.button?.toolTip = "Timestamp Inserter"
 
         let menu = NSMenu()
