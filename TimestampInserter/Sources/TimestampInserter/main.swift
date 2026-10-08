@@ -155,14 +155,17 @@ private struct HotKey: Equatable, Codable {
         return parts.joined(separator: "-")
     }
 
-    var glyphString: String {
+    static func modifierGlyphs(from carbonModifiers: UInt32) -> String {
         var glyphs = ""
-        if modifiers & UInt32(controlKey) != 0 { glyphs += "⌃" }
-        if modifiers & UInt32(optionKey) != 0 { glyphs += "⌥" }
-        if modifiers & UInt32(shiftKey) != 0 { glyphs += "⇧" }
-        if modifiers & UInt32(cmdKey) != 0 { glyphs += "⌘" }
-        glyphs += Self.keyGlyph(for: keyCode)
+        if carbonModifiers & UInt32(controlKey) != 0 { glyphs += "⌃" }
+        if carbonModifiers & UInt32(optionKey) != 0 { glyphs += "⌥" }
+        if carbonModifiers & UInt32(shiftKey) != 0 { glyphs += "⇧" }
+        if carbonModifiers & UInt32(cmdKey) != 0 { glyphs += "⌘" }
         return glyphs
+    }
+
+    var glyphString: String {
+        Self.modifierGlyphs(from: modifiers) + Self.keyGlyph(for: keyCode)
     }
 
     static func modifiers(from flags: NSEvent.ModifierFlags) -> UInt32 {
@@ -615,6 +618,8 @@ private final class HotKeyController {
     private var eventHandler: EventHandlerRef?
     private var registeredHotKeys: [UInt32: (ref: EventHotKeyRef, binding: ShortcutBinding)] = [:]
     private var nextID: UInt32 = 1
+    private var currentBindings: [ShortcutBinding] = []
+    private var isPaused = false
 
     init(callback: @escaping (ShortcutBinding) -> Void) {
         self.callback = callback
@@ -622,6 +627,8 @@ private final class HotKeyController {
     }
 
     func register(bindings: [ShortcutBinding]) {
+        currentBindings = bindings
+        guard !isPaused else { return }
         unregisterAll()
 
         for binding in bindings where binding.isEnabled {
@@ -645,6 +652,18 @@ private final class HotKeyController {
                 print("Could not register hotkey \(binding.hotKey.displayString)")
             }
         }
+    }
+
+    func pause() {
+        guard !isPaused else { return }
+        isPaused = true
+        unregisterAll()
+    }
+
+    func resume() {
+        guard isPaused else { return }
+        isPaused = false
+        register(bindings: currentBindings)
     }
 
     private func installEventHandler() {
@@ -713,7 +732,11 @@ private final class HotKeyRecorderView: NSView {
     }
 
     var onChange: ((HotKey) -> Void)?
-    private var isRecording = false
+    var onRecordingStateChanged: ((Bool) -> Void)?
+
+    private(set) var isRecording = false
+    private var recordingModifiers: UInt32 = 0
+    private var localMonitor: Any?
 
     init(hotKey: HotKey) {
         self.hotKey = hotKey
@@ -727,39 +750,99 @@ private final class HotKeyRecorderView: NSView {
         wantsLayer = true
     }
 
+    deinit {
+        stopRecording()
+    }
+
     override var acceptsFirstResponder: Bool {
         true
     }
 
-    override func mouseDown(with event: NSEvent) {
+    func startRecording() {
+        guard !isRecording else { return }
         isRecording = true
-        window?.makeFirstResponder(self)
+        recordingModifiers = 0
         needsDisplay = true
+        window?.makeFirstResponder(self)
+        onRecordingStateChanged?(true)
+
+        localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .flagsChanged]) { [weak self] event in
+            guard let self = self, self.isRecording else { return event }
+            return self.handleLocalEvent(event)
+        }
+    }
+
+    func stopRecording() {
+        guard isRecording else { return }
+        isRecording = false
+        recordingModifiers = 0
+        if let monitor = localMonitor {
+            NSEvent.removeMonitor(monitor)
+            localMonitor = nil
+        }
+        needsDisplay = true
+        if window?.firstResponder === self {
+            window?.makeFirstResponder(nil)
+        }
+        onRecordingStateChanged?(false)
+    }
+
+    private func handleLocalEvent(_ event: NSEvent) -> NSEvent? {
+        switch event.type {
+        case .flagsChanged:
+            recordingModifiers = HotKey.modifiers(from: event.modifierFlags)
+            needsDisplay = true
+            return nil
+
+        case .keyDown:
+            if event.keyCode == UInt16(kVK_Escape) {
+                stopRecording()
+                return nil
+            }
+
+            if event.keyCode == UInt16(kVK_Delete) || event.keyCode == UInt16(kVK_ForwardDelete) {
+                stopRecording()
+                return nil
+            }
+
+            let mods = HotKey.modifiers(from: event.modifierFlags)
+            let isFunctionKey = (event.keyCode >= UInt16(kVK_F1) && event.keyCode <= UInt16(kVK_F12))
+            guard mods != 0 || isFunctionKey else {
+                NSSound.beep()
+                return nil
+            }
+
+            let newKey = HotKey(keyCode: UInt32(event.keyCode), modifiers: mods)
+            self.hotKey = newKey
+            stopRecording()
+            return nil
+
+        default:
+            return event
+        }
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        if isRecording {
+            stopRecording()
+        } else {
+            startRecording()
+        }
     }
 
     override func resignFirstResponder() -> Bool {
-        isRecording = false
-        needsDisplay = true
+        if isRecording {
+            stopRecording()
+        }
         return true
     }
 
-    override func keyDown(with event: NSEvent) {
-        if event.keyCode == UInt16(kVK_Escape) {
-            isRecording = false
-            window?.makeFirstResponder(nil)
-            needsDisplay = true
-            return
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if isRecording {
+            _ = handleLocalEvent(event)
+            return true
         }
-
-        let modifiers = HotKey.modifiers(from: event.modifierFlags)
-        guard modifiers != 0 else {
-            NSSound.beep()
-            return
-        }
-
-        hotKey = HotKey(keyCode: UInt32(event.keyCode), modifiers: modifiers)
-        isRecording = false
-        window?.makeFirstResponder(nil)
+        return super.performKeyEquivalent(with: event)
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -776,13 +859,23 @@ private final class HotKeyRecorderView: NSView {
         path.lineWidth = isFocused ? 2 : 1
         path.stroke()
 
-        let text = isRecording ? "Press keys…" : hotKey.glyphString
+        let text: String
+        if isRecording {
+            if recordingModifiers != 0 {
+                text = HotKey.modifierGlyphs(from: recordingModifiers) + "…"
+            } else {
+                text = "Record…"
+            }
+        } else {
+            text = hotKey.glyphString
+        }
+
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
 
         let attributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.systemFont(ofSize: 13, weight: .semibold),
-            .foregroundColor: isRecording ? NSColor.secondaryLabelColor : NSColor.labelColor,
+            .foregroundColor: isRecording ? NSColor.controlAccentColor : NSColor.labelColor,
             .paragraphStyle: paragraph
         ]
         let attributed = NSAttributedString(string: text, attributes: attributes)
@@ -941,6 +1034,7 @@ private final class ShortcutRowView: NSView, NSTextFieldDelegate {
 
     var onUpdate: ((ShortcutBinding) -> Void)?
     var onDelete: (() -> Void)?
+    var onRecordingStateChanged: ((Bool) -> Void)?
 
     init(binding: ShortcutBinding, canDelete: Bool) {
         self.binding = binding
@@ -1005,8 +1099,11 @@ private final class ShortcutRowView: NSView, NSTextFieldDelegate {
             self.binding.hotKey = newKey
             self.onUpdate?(self.binding)
         }
+        hotKeyRecorder.onRecordingStateChanged = { [weak self] isRecording in
+            self?.onRecordingStateChanged?(isRecording)
+        }
         NSLayoutConstraint.activate([
-            hotKeyRecorder.widthAnchor.constraint(equalToConstant: 88),
+            hotKeyRecorder.widthAnchor.constraint(equalToConstant: 100),
             hotKeyRecorder.heightAnchor.constraint(equalToConstant: 28)
         ])
 
@@ -1151,9 +1248,13 @@ private final class ShortcutRowView: NSView, NSTextFieldDelegate {
     @objc private func deleteClicked() {
         onDelete?()
     }
+
+    func stopRecording() {
+        hotKeyRecorder.stopRecording()
+    }
 }
 
-private final class PreferencesWindowController: NSWindowController {
+private final class PreferencesWindowController: NSWindowController, NSWindowDelegate {
     private var bindings: [ShortcutBinding] = []
     private let shortcutsStack = NSStackView()
     private var launchAtLoginButton: NSButton?
@@ -1161,9 +1262,11 @@ private final class PreferencesWindowController: NSWindowController {
     private let accessibilityStatusLabel = NSTextField(labelWithString: "")
     private let accessibilityButton = NSButton(title: "System Settings…", target: nil, action: nil)
     private let onChange: () -> Void
+    var onRecordingStateChanged: ((Bool) -> Void)?
 
-    init(onChange: @escaping () -> Void) {
+    init(onChange: @escaping () -> Void, onRecordingStateChanged: ((Bool) -> Void)? = nil) {
         self.onChange = onChange
+        self.onRecordingStateChanged = onRecordingStateChanged
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 490, height: 480),
@@ -1175,11 +1278,30 @@ private final class PreferencesWindowController: NSWindowController {
         window.center()
 
         super.init(window: window)
+        window.delegate = self
         buildUI()
         loadSettings()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func stopAllRecording() {
+        for sub in shortcutsStack.arrangedSubviews {
+            if let row = sub as? ShortcutRowView {
+                row.stopRecording()
+            }
+        }
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        stopAllRecording()
+        onRecordingStateChanged?(false)
+    }
+
+    func windowDidResignKey(_ notification: Notification) {
+        stopAllRecording()
+        onRecordingStateChanged?(false)
+    }
 
     func show() {
         loadSettings()
@@ -1408,6 +1530,9 @@ private final class PreferencesWindowController: NSWindowController {
                 SettingsStore.bindings = self.bindings
                 self.rebuildRows()
                 self.onChange()
+            }
+            row.onRecordingStateChanged = { [weak self] isRecording in
+                self?.onRecordingStateChanged?(isRecording)
             }
             shortcutsStack.addArrangedSubview(row)
             NSLayoutConstraint.activate([
@@ -1790,9 +1915,18 @@ private final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate
 
     @objc private func openSettings() {
         if preferencesWindowController == nil {
-            preferencesWindowController = PreferencesWindowController { [weak self] in
-                self?.installHotKeys()
-            }
+            preferencesWindowController = PreferencesWindowController(
+                onChange: { [weak self] in
+                    self?.installHotKeys()
+                },
+                onRecordingStateChanged: { [weak self] isRecording in
+                    if isRecording {
+                        self?.hotKeyController?.pause()
+                    } else {
+                        self?.hotKeyController?.resume()
+                    }
+                }
+            )
         }
 
         preferencesWindowController?.show()
